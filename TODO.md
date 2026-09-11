@@ -1,623 +1,598 @@
-**Natural correction:** “My team has three members.”
-
-With only **5 days** and 3 people, the biggest risk is not coding difficulty; it’s **integration happening too late**. The team should optimize for having a working end-to-end app by Day 2–3, then spend the remaining time fixing, polishing, and preparing the presentation.
-
-## 1. What to decide at today's kick-off
-
-I’d spend the kick-off on **six decisions**, not detailed implementation.
-
-### A. Define the MVP and component ownership
-
-With 3 members, don't split the assignment into five isolated pieces. A good split is:
-
+# 👥 Group Work Plan
 | Member                            | Main responsibility                                         | Secondary responsibility |
 | --------------------------------- | ----------------------------------------------------------- | ------------------------ |
-| **Member 1 — Lead / API**         | Astro setup, Weather API, geolocation, Vancouver fallback | Integration              |
-| **Member 2 — Search / Favorites** | PlaceKit API (autocomplete), favorites dropdown, localStorage     | Search UI                |
-| **Member 3 — Weather UI**         | Show current weather, 5-day forecast, 3-hour forecast            | Responsive UI            |
+| **Kazi — Lead / API**         | Astro setup, Weather API, geolocation, Vancouver fallback | Integration              |
+| **Miu — Search / Favorites** | PlaceKit API (autocomplete), favorites dropdown, localStorage     | Search UI                |
+| **Sarai — Weather UI**         | Show current weather, 5-day forecast, 3-hour forecast            | Responsive UI            |
+## STEP 1: Decide the app structure together
 
-But **everyone should understand the data flow**, because the final app needs to work as one system.
+**All 3 members**
 
-The important architectural boundary:
+Decide these together before writing feature code:
+
+### Page structure
 
 ```text
-Search
-   ↓
-Selected City
-   ↓
-Weather API
-   ↓
-Weather Data
-   ├── CurrentWeather
-   ├── DailyForecast
-   └── HourlyForecast
+Weather App
+│
+├── Header
+│   ├── App title (KMS Weather)
+│   ├── Search input
+│   └── Favorite cities
+│
+├── Current Weather
+│
+├── 5-Day Forecast
+│
+└── 3-Hour Forecast
 ```
 
-That should be agreed on before coding.
+### Decide element IDs/classes
+
+- id - not isActive, but is-active
+- classes - use BEM like below
+
+For example:
+
+```html
+<input id="citySearch">
+
+<div id="search-results">
+  <div class="title">
+</div>
+
+.title {
+
+}
+
+<select id="favorite-cities"></select>
+
+<section id="current-weather">
+  <div class="current-weather__title"> <!-- DO THIS -->
+</section>
+
+<section id="daily-forecast"></section>
+
+<section id="hourly-forecast"></section>
+```
+
+**Don't let each person invent their own names.**
 
 ---
 
-### B. Agree on the data contract
+# STEP 2: Decide the data flow together
 
-This is probably the **most important technical decision**.
+**All 3 members**
 
-Don't let each person invent their own weather-data shape.
+This is the biggest thing to agree on.
 
-For example, agree that the weather-fetching layer returns something conceptually like:
+### Search
 
-```ts
+```text
+Miu
+ ↓
+PlaceKit
+ ↓
+City name
+Province name
+Country name
+Latitude
+Longitude
+ ↓
+Kazi
+ ↓
+Open-Meteo
+ ↓
+Weather data
+ ↓
+Sarai
+ ↓
+Display weather
+```
+
+### Example
+
+User searches:
+
+> Toronto
+
+Miu gets:
+
+```js
 {
-  location: {
-    name: string;
-    latitude: number;
-    longitude: number;
-  };
-
-  current: {
-    temperature: number;
-    weatherCode: number;
-    ...
-  };
-
-  daily: {
-    date: string[];
-    temperatureMax: number[];
-    temperatureMin: number[];
-    ...
-  };
-
-  hourly: {
-    time: string[];
-    temperature: number[];
-    weatherCode: number[];
-    ...
-  };
+  city: "Toronto",
+  province: "Ontario",
+  country: "Canada",
+  latitude: 43.65,
+  longitude: -79.38
 }
 ```
 
-The exact fields can be decided together.
-
-Then the UI components don't care how Open-Meteo works internally.
+Then Kazi uses:
 
 ```text
-Open-Meteo API
-      ↓
-fetchWeather()
-      ↓
-Normalized WeatherData
-      ↓
-Astro components
+latitude
+longitude
 ```
 
-This dramatically reduces merge/integration problems.
+to request weather.
+
+Then Sarai uses the weather response to display:
+
+```text
+Current Weather
+5-Day Forecast
+3-Hour Forecast
+```
+
+Everyone needs to understand this before coding.
 
 ---
 
-### C. Decide the city object
+# STEP 3: Decide who owns which files
 
-PlaceKit gives you city information, and Open-Meteo needs coordinates.
+This prevents Git conflicts.
 
-Agree on one object:
-
-```ts
-type City = {
-  name: string;
-  latitude: number;
-  longitude: number;
-};
-```
-
-Then:
+### Kazi
 
 ```text
-PlaceKit
-   ↓
-City
-   ↓
-Open-Meteo
+src/
+├── scripts/
+│   └── weather.js
 ```
 
-Favorites should store this same structure in `localStorage`.
+Responsible for:
 
-Don't store only `"Vancouver"` and then have to geocode it again later.
+* Open-Meteo API
+* Geolocation
+* Vancouver fallback
+* Weather data
 
 ---
 
-### D. Decide the state/data flow
+### Miu
 
-Before writing components, answer:
+```text
+src/
+├── scripts/
+│   ├── search.js
+│   └── favorites.js
+```
 
-> **Who owns the currently selected city and weather data?**
+Responsible for:
 
-For a small Astro app, keep this relatively simple.
+* Search input
+* PlaceKit
+* Search suggestions
+* Favorite button
+* Favorite dropdown
+* localStorage
+
+---
+
+### Sarai
+
+```text
+src/
+├── components/
+│   ├── CurrentWeather.astro
+│   ├── DailyForecast.astro
+│   └── HourlyForecast.astro
+```
+
+Responsible for:
+
+* Current weather display
+* 5-day forecast
+* 3-hour forecast
+
+---
+
+# STEP 4: Build the basic HTML together
+
+**All 3 members**
+
+Do this **before individual feature development**.
+
+Create the basic page:
+
+```html
+<header>
+  <h1>Weather App</h1>
+
+  <!-- Miu -->
+  <input id="city-search">
+  <select id="favorite-cities"></select>
+</header>
+
+<main>
+
+  <!-- Sarai -->
+  <section id="current-weather">
+  </section>
+
+  <!-- Sarai -->
+  <section id="daily-forecast">
+  </section>
+
+  <!-- Sarai -->
+  <section id="hourly-forecast">
+  </section>
+
+</main>
+```
+
+Don't worry about beautiful design yet.
+
+The assignment says to focus on **functionality first**, then styling and responsiveness.
+
+---
+
+# STEP 5: Each person develops their feature
+
+Now separate.
+
+## 👨‍💻 Kazi
+
+### Task 1
+
+Get user's location.
+
+```text
+Browser
+ ↓
+Geolocation API
+ ↓
+latitude + longitude
+```
+
+### Task 2
+
+If location is denied:
+
+```text
+Vancouver
+```
+
+The Vancouver fallback is mandatory in the requirements.
+
+### Task 3
+
+Create Weather API function.
+
+Something like:
+
+```js
+getWeather(latitude, longitude)
+```
+
+It should return the weather data.
+
+### Task 4
+
+Make sure Miu and Sarai can use the data.
+
+---
+
+# 👩‍💻 Miu
+
+### Task 1
+
+Create search input.
+
+User types:
+
+```text
+Van
+```
+
+↓
+
+PlaceKit returns suggestions:
+
+```text
+Vancouver
+Vancouver, Washington
+...
+```
+
+### Task 2
+
+User clicks:
+
+```text
+Vancouver
+```
+
+You get:
+
+```text
+city
+latitude
+longitude
+```
+
+### Task 3
+
+Send the selected location to Kazi's weather function.
+
+### Task 4
+
+Favorite button ⭐
+
+User clicks:
+
+```text
+⭐ Vancouver
+```
+
+↓
+
+Save to:
+
+```js
+localStorage
+```
+
+### Task 5
+
+When the page loads:
+
+```text
+localStorage
+ ↓
+Favorite cities
+ ↓
+Dropdown
+```
+
+This is specifically required by the assignment.
+
+---
+
+# 👩‍💻 Sarai
+
+Sarai receives the weather data and displays it.
+
+### Task 1: Current Weather
+
+Display things such as:
+
+```text
+Vancouver
+
+☀️
+
+18°C
+Sunny
+
+Wind
+Humidity
+```
+
+### Task 2: 5-Day Forecast
 
 For example:
 
 ```text
-App
- ├── selectedCity
- ├── weatherData
- │
- ├── Search
- ├── Favorites
- ├── CurrentWeather
- ├── DailyForecast
- └── HourlyForecast
+Mon    ☀️   18°C
+Tue    🌧️   15°C
+Wed    ☁️   17°C
+Thu    ☀️   20°C
+Fri    🌧️   14°C
 ```
 
-You don't need React-style state management for this assignment.
-
-The team should specifically agree on **where client-side JavaScript is needed** and avoid unnecessary DOM manipulation.
-
----
-
-### E. Agree on Git rules
-
-Since three people will be working simultaneously:
-
-```text
-main
- └── feature branches
-      ├── feature/search-favorites - Miu
-      ├── feature/geolocation      - Kazi
-      ├── feature/weather-data     - Kazi
-      └── feature/weather-ui       -
-```
-
-Agree on:
-
-* Never work directly on `main`
-* Pull/rebase before starting work
-* Small commits
-* Descriptive Conventional Commits
-* PR/merge into `main`
-* Don't modify another person's component without communicating
-* Resolve conflicts together rather than blindly accepting one side
-
-Also agree on naming **before** everyone creates files.
+### Task 3: 3-Hour Forecast
 
 For example:
 
 ```text
-src/components/
-  Search.astro
-  Favorites.astro
-  CurrentWeather.astro
-  DailyForecast.astro
-  HourlyForecast.astro
-
-src/lib/
-  weather.ts
-  places.ts
-
-src/styles/
-  _variables.scss
-  _mixins.scss
-  global.scss
+12 PM   ☀️   18°C
+3 PM    ☀️   19°C
+6 PM    🌤️   17°C
+9 PM    🌙   13°C
 ```
 
-You don't have to use exactly this structure, but agree on one.
+### Task 4
 
----
-
-### F. Make a "definition of done"
-
-For this assignment, I'd make the checklist brutally concrete:
-
-* [ ] Astro app runs
-* [ ] Default location works
-* [ ] Vancouver fallback works
-* [ ] City search works
-* [ ] Selecting city loads weather
-* [ ] Current weather works
-* [ ] 5-day forecast works
-* [ ] Clicking a day changes 3-hour forecast
-* [ ] Favorites work
-* [ ] Favorites survive reload
-* [ ] Mobile 375px works
-* [ ] Desktop 1440px works
-* [ ] Error/loading states exist
-* [ ] Deployed
-* [ ] README has live URL
-* [ ] Presentation ready
-
-This becomes your team's **real project board**.
-
----
-
-# 2. Five-day milestone plan
-
-The key rule:
-
-> **Do not spend Day 1–2 making things beautiful. Get the entire data flow working first.**
-
-## Day 1 — Foundation + API proof
-
-### Goal
-
-**Everybody can run the project, and the core APIs are understood.**
-
-### Member 1
-
-* Scaffold Astro
-* Set up Git branches
-* Create basic project structure
-* Create shared SCSS variables
-* Implement/test geolocation
-* Implement Vancouver fallback
-* Start weather API utility
-
-### Member 2
-
-* Investigate PlaceKit API
-* Build search/autocomplete
-* Determine exact response → `City` mapping
-* Start favorites/localStorage
-
-### Member 3
-
-* Investigate Open-Meteo response
-* Build weather-data types
-* Design Current/Daily/Hourly component interfaces
-* Create rough UI components using mock data
-
-### Team checkpoint
-
-By the end of Day 1:
+When the user clicks:
 
 ```text
-User location
-     ↓
-City { name, lat, lng }
-     ↓
-Open-Meteo
-     ↓
-WeatherData
+Tuesday
 ```
 
-should be proven to work.
+the 3-hour forecast changes to Tuesday's data.
 
-**Don't aim for finished UI.**
-
----
-
-# Day 2 — Vertical slice
-
-### Goal
-
-**A user can search/select a city and see actual weather.**
-
-This is your most important day.
-
-### Member 1
-
-* Finish `fetchWeather()`
-* Finish geolocation/fallback
-* Connect selected city → weather fetching
-* Handle loading/error states
-
-### Member 2
-
-* Finish autocomplete
-* Finish favorite add/remove
-* Finish localStorage persistence
-* Connect favorite selection → selected city
-
-### Member 3
-
-* Finish CurrentWeather
-* Finish DailyForecast
-* Start HourlyForecast
-* Use real API data instead of mock data
-
-### Team integration
-
-At the end of Day 2, ideally:
-
-```text
-Search Vancouver
-      ↓
-Select Vancouver
-      ↓
-Fetch Open-Meteo
-      ↓
-┌─────────────────────┐
-│ Current Weather     │
-│                     │
-│ 5-Day Forecast      │
-│                     │
-│ 3-Hour Forecast     │
-└─────────────────────┘
-```
-
-Even if it looks ugly.
-
-**If this doesn't work by the end of Day 2, stop adding features and integrate.**
+This interaction is explicitly required.
 
 ---
 
-# Day 3 — Complete functionality
+# STEP 6: Integration meeting
 
-### Goal
+After everyone finishes their first version:
 
-**All mandatory requirements work.**
+### All 3 meet together.
 
-Focus on functionality rather than visual polish.
+Test this exact scenario:
 
-### Member 1
-
-* Integration/debugging
-* API error handling
-* Geolocation edge cases
-* Check API/network failures
-
-### Member 2
-
-* Finish favorites UX
-* Verify reload persistence
-* Verify selecting favorites changes weather
-* Search edge cases
-
-### Member 3
-
-* Finish 3-hour forecast
-* Implement daily-card → hourly-data interaction
-* Weather icons/labels
-* Verify 5 days and 3-hour intervals
-
-### Team testing
-
-Test the actual requirements one by one.
-
-Especially:
+### Test 1
 
 ```text
-Open app
+Open website
  ↓
 Allow location
  ↓
+Current location appears
+ ↓
 Weather appears
-
-Open app
- ↓
-Deny location
- ↓
-Vancouver appears
-
-Search another city
- ↓
-Select it
- ↓
-Weather changes
-
-Click star
- ↓
-City appears in favorites
-
-Reload
- ↓
-Favorite still exists
-
-Click Day 3
- ↓
-3-hour forecast changes to Day 3
 ```
 
-By the end of Day 3:
+### Test 2
 
-> **Feature-complete MVP.**
+```text
+Block location
+ ↓
+Vancouver appears
+ ↓
+Weather appears
+```
 
-No major functionality should still be "almost done."
+### Test 3
+
+```text
+Search "Toronto"
+ ↓
+Suggestions appear
+ ↓
+Click Toronto
+ ↓
+Toronto weather appears
+```
+
+### Test 4
+
+```text
+Click ⭐
+ ↓
+Toronto added to favorites
+ ↓
+Refresh page
+ ↓
+Toronto still exists
+```
+
+### Test 5
+
+```text
+Open favorite dropdown
+ ↓
+Select Toronto
+ ↓
+Toronto weather appears
+```
+
+### Test 6
+
+```text
+Click Wednesday
+ ↓
+3-hour forecast changes
+```
 
 ---
 
-# Day 4 — Desktop + mobile polish
+# STEP 7: Responsive design together
 
-### Goal
+**All 3 members**
 
-**Make the MVP look like a finished product.**
+After functionality works, work on:
 
-Start with desktop:
+### Desktop
 
 ```text
 1440px
 ```
 
-Then mobile:
+### Mobile
 
 ```text
 375px
 ```
 
-Don't create two completely different designs.
+These are the required target sizes.
 
-Use the same structure and adjust:
+But don't redesign everything.
 
-* layout
-* spacing
-* font sizes
-* card widths
-* horizontal scrolling where appropriate
-* navigation/dropdown positioning
-* forecast layout
+Instead:
 
-### Team responsibilities
+```text
+Desktop works
+     ↓
+Check 375px
+     ↓
+Find problems
+     ↓
+Add media queries
+     ↓
+Fix only those problems
+```
 
-Divide the screen rather than assigning completely separate features.
+---
+
+# STEP 8: Code review together
+
+Each person explains their code to the other two.
 
 For example:
 
-* Member 1 → overall layout + integration
-* Member 2 → search/favorites styling
-* Member 3 → weather/forecast styling
+### Kazi explains
 
-Then **review each other's work**.
+> "This function gets latitude and longitude and calls Open-Meteo."
 
-Also check:
+### Miu explains
 
-* loading state
-* empty state
-* API error
-* long city names
-* unusual weather values
-* small screens
-* touch targets
-* keyboard usability
+> "This function saves the favorite city to localStorage."
+
+### Sarai explains
+
+> "This function takes the daily weather data and creates the forecast cards."
+
+This is useful because **code readability, error handling, teamwork, and GitHub contributions are part of the marking criteria.**
 
 ---
 
-# Day 5 — QA + deployment + presentation
+# STEP 9: Presentation together
 
-### Goal
+All 3 members prepare the slides.
 
-**No new features unless absolutely necessary.**
+The assignment wants you to explain:
 
-Morning:
+1. What you built
+2. How you divided the work
+3. What you learned
+4. What was difficult
+5. How you solved the problems
 
-### Full QA
 
-Test from a clean browser/session.
 
-```text
-□ Location allowed
-□ Location denied
-□ Vancouver fallback
-□ Search
-□ Autocomplete
-□ Select city
-□ Current weather
-□ 5-day forecast
-□ Day selection
-□ 3-hour forecast
-□ Add favorite
-□ Remove favorite
-□ Reload favorites
-□ Desktop
-□ Mobile
-□ API failure
-□ Loading state
-```
-
-Then:
-
-### Deployment
-
-Deploy early enough that you still have time to fix production-only problems.
-
-After deployment:
+A simple presentation structure:
 
 ```text
-Live site
-   ↓
-Test again
-   ↓
-Fix production issues
-   ↓
-README
-   ↓
-Final commit
-```
+Slide 1
+Project introduction
 
-Don't treat deployment as the last 30 minutes of the project.
+Slide 2
+App features
+
+Slide 3
+Team responsibilities
+
+Slide 4
+How the APIs work
+
+Slide 5
+GitHub / teamwork
+
+Slide 6
+Difficulties & solutions
+
+Slide 7
+Demo
+
+Slide 8
+What we learned
+```
 
 ---
 
-## Presentation preparation
+# 🗓️ Recommended team schedule
 
-Your presentation is only **10–15 minutes**, so don't explain every component.
-
-A simple structure:
-
-### 1. What you built — 2 min
-
-Show the app.
-
-### 2. How it works — 3 min
-
-```text
-PlaceKit
-   ↓
-City coordinates
-   ↓
-Open-Meteo
-   ↓
-Weather data
-   ↓
-Astro components
-```
-
-### 3. Team split — 2 min
-
-Explain who worked on what.
-
-### 4. Technical challenges — 3 min
-
-Pick **2–3 real problems**, for example:
-
-* geolocation fallback
-* transforming API data
-* synchronizing selected day with hourly forecast
-* localStorage rehydration
-* responsive forecast UI
-
-### 5. What you learned — 2 min
-
-Focus on concrete technical lessons.
-
-### 6. Demo — remaining time
-
-Have one **happy-path demo** prepared:
-
-```text
-Open app
-→ show detected/default city
-→ search another city
-→ select it
-→ show current weather
-→ click Day 3
-→ show 3-hour forecast
-→ star it
-→ reload
-→ show favorite still exists
-```
-
-That gives you a very strong demonstration of the requirements.
-
----
-
-# The overall 5-day strategy
-
-I'd visualize the project like this:
-
-```text
-          DAY 1
-       FOUNDATION
-           │
-           ▼
-          DAY 2
-    END-TO-END MVP
-           │
-           ▼
-          DAY 3
-    FEATURE COMPLETE
-           │
-           ▼
-          DAY 4
-   DESKTOP + MOBILE
-           │
-           ▼
-          DAY 5
- QA → DEPLOY → PRESENT
-```
-
-The **critical milestone is Day 2**.
-
-If Day 2 ends with a working:
-
-> `City → WeatherData → UI`
-
-pipeline, you have a very manageable project.
-
-If Day 3 ends with all requirements working, **Day 4 becomes polish instead of emergency development**, and Day 5 becomes QA/deployment rather than "please don't break."
-
-One extra thing that would be useful: before your team starts coding, a **30-minute technical kickoff document** defining the `City` type, `WeatherData` shape, component boundaries, folder structure, and Git branch ownership would prevent a lot of merge/integration pain. I can draft that as a concrete team agreement you can paste directly into your repo.
+| Time      | Group                          | Individual                |
+| --------- | ------------------------------ | ------------------------- |
+| **Day 1** | Structure + data flow + naming | Start assigned tasks      |
+| **Day 2** | Quick progress check           | Continue coding           |
+| **Day 3** | API integration                | Finish main functionality |
+| **Day 4** | Integration testing            | Fix bugs                  |
+| **Day 5** | Responsive design              | Fix individual UI         |
+| **Day 6** | Full testing                   | Bug fixes                 |
+| **Day 7** | Presentation                   | Prepare slides            |
