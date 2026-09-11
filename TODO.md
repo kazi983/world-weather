@@ -585,14 +585,12 @@ What we learned
 
 ---
 
-# 🗓️ Recommended team schedule
+# 🗓️ Schedule
 
 | Time      | Group                          | Individual                |
 | --------- | ------------------------------ | ------------------------- |
 | **Day 1** | Structure + data flow + naming | Start assigned tasks      |
-| **Day 2** | Quick progress check           | Continue coding           |
-| **Day 3** | API integration                | Finish main functionality |
-| **Day 4** | Integration testing            | Fix bugs                  |
-| **Day 5** | Responsive design              | Fix individual UI         |
-| **Day 6** | Full testing                   | Bug fixes                 |
-| **Day 7** | Presentation                   | Prepare slides            |
+| **Day 2** | API integration, Integration testing                | Finish main, Fix bugs functionality |
+| **Day 3** | Responsive design              | Fix individual UI         |
+| **Day 4** | Full testing, Prepare Presentation  | Bug fixes                 |
+| **Day 5** | Presentation                   | Prepare slides            |
