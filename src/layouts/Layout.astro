@@ -1,22 +1,46 @@
+---
+import "../sass/global.scss";
+
+const title = "KMS Weather";
+---
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <!-- TODO -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    <title>KMS Weather</title>
+    <title>{title}</title>
+    <script
+      is:inline
+      src="https://code.jquery.com/jquery-4.0.0.js"
+      integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <!-- Miu -->
     <!-- ⚠️ Please overwrite with your Header Astro component -->
     <header>
-      <h1>Weather App</h1>
-      <input id="city-search" />
-      <select id="favorite-cities"></select>
+      <h1>{title}</h1>
+      <input
+        id="search"
+        type="text"
+        placeholder="Type a city or address"
+        autocomplete="off"
+      />
+      <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
+      <ul id="dropdown"></ul>
+      <select id="favoriteCities">
+        <option>Vancouver</option>
+        <option>Toronto</option>
+        <option>Montreal</option>
+      </select>
     </header>
+
     <slot />
+
   </body>
 </html>
