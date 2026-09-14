@@ -46,6 +46,42 @@ const title = "KMS Weather";
       const PLACES_URL = "https://api.placekit.co/search";
       const PLACEKIT_API_KEY = "pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=";
 
+      // search
+      let searchResults = [];
+      async function searchPlaces(query){
+        const response = await fetch(PLACES_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-placekit-api-key": PLACEKIT_API_KEY,
+          },
+          body: JSON.stringify({
+            query: query,
+            types:["country", "city"],
+            maxResults: 5,
+          }),
+        });
+
+        if(!response.ok){
+          throw new Error("Placeskit error" + response.status);
+        }
+
+        const data = await response.json();
+        searchResults  = data.results; //"Take the PlaceKit results and save them in my results variable."
+        return searchResults ;
+      }
+
+      $("#search").on("input", async function () {
+        const query = $(this).val().trim(); //Get what the user typed and remove unnecessary spaces.
+
+        if(query.length < 2){
+          $("#dropdown").addClass("hidden");
+          return
+        }
+        const places  = await searchPlaces(query);
+        console.log(places);
+              
+      })
     </script>
   </body>
 </html>
