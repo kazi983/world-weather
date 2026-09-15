@@ -116,10 +116,11 @@ const title = 'KMS Weather';
       // Select Place============================================
       $('#dropdown').on('click', 'li[data-index]', function () {
         const index = $(this).data('index');
-        // console.log(`index: ${index}`); // 0,1,2...
-
         selectedPlace = searchResults[index];
         // console.log(selectedPlace);
+
+        $("#search").val(`${selectedPlace.city}, ${selectedPlace.administrative}, ${selectedPlace.country}`); // show selected place on search bar.
+        $("#dropdown").addClass("hidden"); // close dropdown when selected 
 
         // console.log(selectedPlace.lat);
         // console.log(selectedPlace.lng);
