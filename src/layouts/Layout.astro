@@ -13,16 +13,17 @@ const title = "KMS Weather";
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+
+    <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
+    ></script>
     <script
       is:inline
       src="https://code.jquery.com/jquery-4.0.0.js"
       integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
-      crossorigin="anonymous"
-    ></script>
+      crossorigin="anonymous"></script>
   </head>
   <body>
     <!-- Miu -->
-    <!-- ⚠️ Please overwrite with your Header Astro component -->
     <header>
       <h1>{title}</h1>
       <input
@@ -44,11 +45,12 @@ const title = "KMS Weather";
     <script is:inline>
       // API
       const PLACES_URL = "https://api.placekit.co/search";
-      const PLACEKIT_API_KEY = "pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=";
+      const PLACEKIT_API_KEY =
+        "pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=";
 
-      // search
+      // search============================================
       let searchResults = [];
-      async function searchPlaces(query){
+      async function searchPlaces(query) {
         const response = await fetch(PLACES_URL, {
           method: "POST",
           headers: {
@@ -57,31 +59,48 @@ const title = "KMS Weather";
           },
           body: JSON.stringify({
             query: query,
-            types:["country", "city"],
+            types: ["country", "city"],
             maxResults: 5,
           }),
         });
 
-        if(!response.ok){
+        if (!response.ok) {
           throw new Error("Placeskit error" + response.status);
         }
 
         const data = await response.json();
-        searchResults  = data.results; //"Take the PlaceKit results and save them in my results variable."
-        return searchResults ;
+        searchResults = data.results; //"Take the PlaceKit results and save them in my results variable."
+        return searchResults;
       }
 
       $("#search").on("input", async function () {
         const query = $(this).val().trim(); //Get what the user typed and remove unnecessary spaces.
 
-        if(query.length < 2){
+        if (query.length < 2) {
           $("#dropdown").addClass("hidden");
-          return
+          return;
         }
-        const places  = await searchPlaces(query);
-        console.log(places);
-              
-      })
+        const places = await searchPlaces(query);
+        renderDropdown(places);
+      });
+
+      // SHOW ===============================================
+
+      function renderDropdown(items) {
+        const $dropdown = $("#dropdown");
+        $dropdown.empty(); //This removes everything currently inside the <ul>.
+
+        if (items.length == 0) {
+          $dropdown.append("<li>No Result</li>");
+        }
+
+        items.forEach(function (item, index) {
+          const li = `<li data-index="${index}" class = "hover:bg-gray-100">$
+             ${item.city} ${item.country}</li>`;
+          $dropdown.append(li);
+        });
+        $dropdown.removeClass("hidden");
+      }
     </script>
   </body>
 </html>
