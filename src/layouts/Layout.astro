@@ -24,21 +24,36 @@ const title = "KMS Weather";
   </head>
   <body>
     <!-- Miu -->
-    <header>
-      <h1>{title}</h1>
-      <input
-        id="search"
-        type="text"
-        placeholder="Type a city or address"
-        autocomplete="off"
-      />
-      <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
-      <ul id="dropdown"></ul>
-      <select id="favoriteCities">
-        <option>Vancouver</option>
-        <option>Toronto</option>
-        <option>Montreal</option>
-      </select>
+    <header class="p-3">
+      <h1 class="text-3xl font-bold text-center mb-6">{title}</h1>
+
+      <div class="absolute top-4 right-10">
+        💜<select
+          id="favoriteCities"
+          class="border border-gray-300 rounded-lg p-2 bg-white left-10"
+        >
+          <option>Vancouver</option>
+          <option>Toronto</option>
+          <option>Montreal</option>
+        </select>
+      </div>
+
+      <div class="relative">
+        <input
+          id="search"
+          type="text"
+          placeholder="Type a city or address"
+          autocomplete="off"
+          class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+
+        <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
+        <ul
+          id="dropdown"
+          class="absolute left-0 right-0 bg-white border border-gray-300 rounded-lg mt-1 shadow-md overflow-hidden z-10 pl-2"
+        >
+        </ul>
+      </div>
     </header>
 
     <slot />
@@ -104,17 +119,16 @@ const title = "KMS Weather";
       }
 
       // Select Place============================================
-      $("#dropdown").on("click", "li[data-index]", function(){
+      $("#dropdown").on("click", "li[data-index]", function () {
         const index = $(this).data("index");
         // console.log(`index: ${index}`); // 0,1,2...
-        
+
         selectedPlace = searchResults[index];
         // console.log(selectedPlace);
-        
-        // console.log(selectedPlace.lat);
-        // console.log(selectedPlace.lng);     
-      })
 
+        // console.log(selectedPlace.lat);
+        // console.log(selectedPlace.lng);
+      });
     </script>
   </body>
 </html>
