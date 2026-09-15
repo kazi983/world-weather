@@ -1,4 +1,5 @@
 <button id="favoriteButton" class="favoriteButton">💜</button>
+
 <select id="favoriteCities" class="left-10 bg-white p-2 border border-gray-300 rounded-lg">
 </select>
 
@@ -12,34 +13,67 @@
   // ==========================================================================
   // Type
   // ==========================================================================
+
   type City = {
     city: string;
-    province: string;
+    administrative: string;
     country: string;
-    latitude: number;
-    longitude: number;
+    lat: number;
+    lng: number;
+    coordinates: string;
   };
 
   // ==========================================================================
   // Global variables
   // ==========================================================================
+
   let favoriteCities: City[] = JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
 
   // ==========================================================================
   // DOM
   // ==========================================================================
+
   const favoriteCitiesSelector = document.querySelector<HTMLSelectElement>('#favoriteCities');
   const favoriteButton = document.querySelector<HTMLButtonElement>('#favoriteButton');
-  const citySearch = document.querySelector<HTMLInputElement>('#citySearch');
 
   // ==========================================================================
   // Functions
   // ==========================================================================
+
   function toggleFavoriteStyle(value: string) {
-    if (favoriteCities.find((favorite) => `${favorite.latitude},${favorite.longitude}` === value)) {
+    if (favoriteCities.find((favorite) => `${favorite.lat},${favorite.lng}` === value)) {
       favoriteButton?.classList.add('favorite');
     } else {
       favoriteButton?.classList.remove('favorite');
+    }
+  }
+
+  function displayOptions() {
+    if (favoriteCitiesSelector) {
+      favoriteCitiesSelector.innerHTML = '';
+    }
+
+    console.log('favoriteCities :>> ', favoriteCities.length);
+
+    if (favoriteCities.length === 0) {
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = 'Favorites';
+
+      favoriteCitiesSelector?.append(defaultOption);
+    } else {
+      favoriteCities.forEach((favorite) => {
+        const cityElement = document.createElement('option');
+
+        cityElement.value = favorite.coordinates;
+        cityElement.dataset.lat = String(favorite.lat);
+        cityElement.dataset.lng = String(favorite.lng);
+
+        cityElement.textContent = [favorite.city, favorite.administrative, favorite.country].join(
+          ', ',
+        );
+
+        favoriteCitiesSelector?.append(cityElement);
+      });
     }
   }
 
@@ -47,18 +81,7 @@
   // Initial display
   // ==========================================================================
 
-  favoriteCities.forEach((favorite) => {
-    const cityElement = document.createElement('option');
-
-    cityElement.value = `${favorite.latitude},${favorite.longitude}`;
-    cityElement.dataset.latitude = String(favorite.latitude);
-    cityElement.dataset.longitude = String(favorite.longitude);
-
-    cityElement.textContent = [favorite.city, favorite.province, favorite.country].join(', ');
-
-    favoriteCitiesSelector?.append(cityElement);
-  });
-
+  displayOptions();
   toggleFavoriteStyle(favoriteCitiesSelector?.value ?? '');
 
   // ==========================================================================
@@ -67,38 +90,44 @@
 
   favoriteCitiesSelector?.addEventListener('change', (event) => {
     const select = event?.currentTarget as HTMLSelectElement;
-    const [latitude, longitude] = select.value.split(',').map(Number);
+    const [lat, lng] = select.value.split(',').map(Number);
 
-    // Pass latitude and longitude to WeatherAPI
+    // Pass lat and lng to WeatherAPI
   });
 
   favoriteButton?.addEventListener('click', () => {
-    // Get data from PlaceKit API
-    const cityInput = citySearch?.value;
-    const selectedValue = '100,-100';
-    const selectedCity = 'Vancouver';
-    const selectedProvince = 'BC';
-    const selectedCountry = 'Canada';
-    const [selectedLatitude, selectedLongitude] = selectedValue.split(',');
-
-    // TODO
-    const selectedCityData = {};
+    let selectedPlace = {
+      name: '大阪市',
+      highlight: '大阪市',
+      city: '大阪市',
+      county: '泉北郡',
+      administrative: '大阪府',
+      country: '日本',
+      administrativecode: '',
+      countrycode: 'jp',
+      countycode: '',
+      zipcode: ['543-0062'],
+      population: 2643805,
+      lat: 34.6937569,
+      lng: 135.5014539,
+      coordinates: '34.6937569, 135.5014539',
+      type: 'city',
+    };
 
     if (
-      selectedValue &&
-      favoriteCities.find(
-        (favorite) => `${favorite.latitude},${favorite.longitude}` === selectedValue,
-      )
+      selectedPlace &&
+      favoriteCities.find((favorite) => favorite.coordinates === selectedPlace.coordinates)
     ) {
       favoriteButton?.classList.remove('favorite');
       favoriteCities = favoriteCities.filter(
-        (favorite) => `${favorite.latitude},${favorite.longitude}` !== selectedValue,
+        (favorite) => favorite.coordinates !== selectedPlace.coordinates,
       );
     } else {
       favoriteButton?.classList.add('favorite');
-      favoriteCities.push(selectedCityData);
+      favoriteCities.push(selectedPlace);
     }
 
     localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
+    displayOptions();
   });
 </script>
