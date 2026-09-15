@@ -48,8 +48,10 @@ const title = "KMS Weather";
       const PLACEKIT_API_KEY =
         "pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=";
 
-      // search============================================
+      // Search Place============================================
       let searchResults = [];
+      let selectedPlace;
+
       async function searchPlaces(query) {
         const response = await fetch(PLACES_URL, {
           method: "POST",
@@ -84,7 +86,7 @@ const title = "KMS Weather";
         renderDropdown(places);
       });
 
-      // SHOW ===============================================
+      // SHOW Place ===============================================
 
       function renderDropdown(items) {
         const $dropdown = $("#dropdown");
@@ -95,12 +97,24 @@ const title = "KMS Weather";
         }
 
         items.forEach(function (item, index) {
-          const li = `<li data-index="${index}" class = "hover:bg-gray-100">$
-             ${item.city} ${item.country}</li>`;
+          const li = `<li data-index="${index}" class = "hover:bg-gray-100">${item.city} ${item.country}</li>`;
           $dropdown.append(li);
         });
         $dropdown.removeClass("hidden");
       }
+
+      // Select Place============================================
+      $("#dropdown").on("click", "li[data-index]", function(){
+        const index = $(this).data("index");
+        // console.log(`index: ${index}`); // 0,1,2...
+        
+        selectedPlace = searchResults[index];
+        // console.log(selectedPlace);
+        
+        // console.log(selectedPlace.lat);
+        // console.log(selectedPlace.lng);     
+      })
+
     </script>
   </body>
 </html>
