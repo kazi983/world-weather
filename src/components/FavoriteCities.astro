@@ -23,20 +23,20 @@
   </button>
 </div>
 
-<style>
-  .favoriteContainer {
+<style lang="scss">
+  .favorite {
+    &Container {
     display: flex;
     justify-content: center;
     gap: 1rem;
   }
-
-  .favoriteContainer .favoriteButton svg {
-    stroke: black;
+    &Button svg {
     fill: none;
     transition: fill 0.2s ease;
   }
-  .favoriteContainer .favoriteButton.favorite svg {
-    fill: black;
+    &Button[data-favorited='true'] svg {
+      fill: currentColor;
+    }
   }
 </style>
 
@@ -55,12 +55,6 @@
   };
 
   // ==========================================================================
-  // Global variables
-  // ==========================================================================
-
-  let favoriteCities: City[] = JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
-
-  // ==========================================================================
   // DOM
   // ==========================================================================
 
@@ -71,12 +65,15 @@
   // Functions
   // ==========================================================================
 
-  function toggleFavoriteStyle(value: string) {
-    if (favoriteCities.find((favorite) => `${favorite.lat},${favorite.lng}` === value)) {
-      favoriteButton?.classList.add('favorite');
-    } else {
-      favoriteButton?.classList.remove('favorite');
-    }
+  function toggleFavorited() {
+    if (!favoriteButton) throw new Error(`Failed to get DOM: #favoriteButton`);
+    if (!favoriteCitiesSelector) throw new Error(`Failed to get DOM: #favoriteCities`);
+
+    const isFavorited = favoriteCities.some(
+      (favorite) => favorite.coordinates === favoriteCitiesSelector.value,
+    );
+
+    favoriteButton.dataset.favorited = String(isFavorited);
   }
 
   function displayOptions() {
@@ -108,12 +105,13 @@
     }
   }
 
-  // ==========================================================================
-  // Initial display
-  // ==========================================================================
-
-  displayOptions();
-  toggleFavoriteStyle(favoriteCitiesSelector?.value ?? '');
+  function getFavoriteCities(): City[] {
+    try {
+      return JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
+    } catch {
+      return [];
+    }
+  }
 
   // ==========================================================================
   // Event listeners
@@ -161,5 +159,14 @@
 
     localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
     displayOptions();
+    toggleFavorited();
   });
+
+  // ==========================================================================
+  // Initialize
+  // ==========================================================================
+
+  let favoriteCities = getFavoriteCities();
+  displayOptions();
+  toggleFavorited();
 </script>
