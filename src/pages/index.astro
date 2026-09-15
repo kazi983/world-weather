@@ -11,3 +11,26 @@ import Layout from '../layouts/Layout.astro';
     <section id="hourly-forecast"></section>
   </main>
 </Layout>
+
+<script>
+  type Coords = {
+    latitude: number;
+    longitude: number;
+  };
+
+  // Default: Vancouver (source: https://www.latlong.net/place/vancouver-bc-canada-2279.html)
+  const currentCoords: Coords = { latitude: 49.246292, longitude: -123.116226 };
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success);
+    }
+  }
+
+  function success(position: GeolocationPosition) {
+    currentCoords.latitude = position.coords.latitude;
+    currentCoords.longitude = position.coords.longitude;
+  }
+
+  getLocation();
+</script>
