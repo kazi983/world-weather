@@ -20,10 +20,10 @@ import HourlyForecast from '../components/HourlyForecast.astro';
     longitude: number;
   };
 
-  // Default: Vancouver
+  // Default: Vancouver (source: https://www.latlong.net/place/vancouver-bc-canada-2279.html)
   const currentCoords: Coords = {
     latitude: 49.246292,
-    longitude: -123.116226
+    longitude: -123.116226,
   };
 
   function getLocation() {
