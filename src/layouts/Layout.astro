@@ -1,3 +1,7 @@
+---
+import FavoriteCities from '../components/FavoriteCities.astro';
+---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -15,7 +19,7 @@
     <header>
       <h1>Weather App</h1>
       <input id="city-search" />
-      <select id="favorite-cities"></select>
+      <FavoriteCities />
     </header>
     <slot />
   </body>
