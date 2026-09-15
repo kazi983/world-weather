@@ -67,9 +67,9 @@ const title = 'KMS Weather';
           },
           body: JSON.stringify({
             query: query,
-            types: ['country', 'city'],
-            // types: ["country", "city", "administrative"],
+            types: ['city'],
             maxResults: 5,
+            language: 'en'
           }),
         });
 
