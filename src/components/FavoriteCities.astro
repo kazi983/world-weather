@@ -1,0 +1,104 @@
+<button id="favoriteButton" class="favoriteButton">💜</button>
+<select id="favoriteCities" class="left-10 bg-white p-2 border border-gray-300 rounded-lg">
+</select>
+
+<style>
+  .favoriteButton.favorite {
+    background: yellow;
+  }
+</style>
+
+<script>
+  // ==========================================================================
+  // Type
+  // ==========================================================================
+  type City = {
+    city: string;
+    province: string;
+    country: string;
+    latitude: number;
+    longitude: number;
+  };
+
+  // ==========================================================================
+  // Global variables
+  // ==========================================================================
+  let favoriteCities: City[] = JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
+
+  // ==========================================================================
+  // DOM
+  // ==========================================================================
+  const favoriteCitiesSelector = document.querySelector<HTMLSelectElement>('#favoriteCities');
+  const favoriteButton = document.querySelector<HTMLButtonElement>('#favoriteButton');
+  const citySearch = document.querySelector<HTMLInputElement>('#citySearch');
+
+  // ==========================================================================
+  // Functions
+  // ==========================================================================
+  function toggleFavoriteStyle(value: string) {
+    if (favoriteCities.find((favorite) => `${favorite.latitude},${favorite.longitude}` === value)) {
+      favoriteButton?.classList.add('favorite');
+    } else {
+      favoriteButton?.classList.remove('favorite');
+    }
+  }
+
+  // ==========================================================================
+  // Initial display
+  // ==========================================================================
+
+  favoriteCities.forEach((favorite) => {
+    const cityElement = document.createElement('option');
+
+    cityElement.value = `${favorite.latitude},${favorite.longitude}`;
+    cityElement.dataset.latitude = String(favorite.latitude);
+    cityElement.dataset.longitude = String(favorite.longitude);
+
+    cityElement.textContent = [favorite.city, favorite.province, favorite.country].join(', ');
+
+    favoriteCitiesSelector?.append(cityElement);
+  });
+
+  toggleFavoriteStyle(favoriteCitiesSelector?.value ?? '');
+
+  // ==========================================================================
+  // Event listeners
+  // ==========================================================================
+
+  favoriteCitiesSelector?.addEventListener('change', (event) => {
+    const select = event?.currentTarget as HTMLSelectElement;
+    const [latitude, longitude] = select.value.split(',').map(Number);
+
+    // Pass latitude and longitude to WeatherAPI
+  });
+
+  favoriteButton?.addEventListener('click', () => {
+    // Get data from PlaceKit API
+    const cityInput = citySearch?.value;
+    const selectedValue = '100,-100';
+    const selectedCity = 'Vancouver';
+    const selectedProvince = 'BC';
+    const selectedCountry = 'Canada';
+    const [selectedLatitude, selectedLongitude] = selectedValue.split(',');
+
+    // TODO
+    const selectedCityData = {};
+
+    if (
+      selectedValue &&
+      favoriteCities.find(
+        (favorite) => `${favorite.latitude},${favorite.longitude}` === selectedValue,
+      )
+    ) {
+      favoriteButton?.classList.remove('favorite');
+      favoriteCities = favoriteCities.filter(
+        (favorite) => `${favorite.latitude},${favorite.longitude}` !== selectedValue,
+      );
+    } else {
+      favoriteButton?.classList.add('favorite');
+      favoriteCities.push(selectedCityData);
+    }
+
+    localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
+  });
+</script>

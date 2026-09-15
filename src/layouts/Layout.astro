@@ -1,7 +1,8 @@
 ---
-import "../sass/global.scss";
+import '../sass/global.scss';
+import FavoriteCities from '../components/FavoriteCities.astro';
 
-const title = "KMS Weather";
+const title = 'KMS Weather';
 ---
 
 <!doctype html>
@@ -14,8 +15,7 @@ const title = "KMS Weather";
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
 
-    <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
-    ></script>
+    <script is:inline src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script
       is:inline
       src="https://code.jquery.com/jquery-4.0.0.js"
@@ -23,19 +23,11 @@ const title = "KMS Weather";
       crossorigin="anonymous"></script>
   </head>
   <body>
-    <!-- Miu -->
     <header class="p-3">
-      <h1 class="text-3xl font-bold text-center mb-6">{title}</h1>
+      <h1 class="mb-6 font-bold text-3xl text-center">{title}</h1>
 
-      <div class="absolute top-4 right-10">
-        💜<select
-          id="favoriteCities"
-          class="border border-gray-300 rounded-lg p-2 bg-white left-10"
-        >
-          <option>Vancouver</option>
-          <option>Toronto</option>
-          <option>Montreal</option>
-        </select>
+      <div class="top-4 right-10 absolute">
+        <FavoriteCities />
       </div>
 
       <div class="relative">
@@ -44,13 +36,13 @@ const title = "KMS Weather";
           type="text"
           placeholder="Type a city or address"
           autocomplete="off"
-          class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
         />
 
         <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
         <ul
           id="dropdown"
-          class="absolute left-0 right-0 bg-white border border-gray-300 rounded-lg mt-1 shadow-md overflow-hidden z-10 pl-2"
+          class="right-0 left-0 z-10 absolute bg-white shadow-md mt-1 pl-2 border border-gray-300 rounded-lg overflow-hidden"
         >
         </ul>
       </div>
@@ -59,9 +51,8 @@ const title = "KMS Weather";
     <slot />
     <script is:inline>
       // API
-      const PLACES_URL = "https://api.placekit.co/search";
-      const PLACEKIT_API_KEY =
-        "pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=";
+      const PLACES_URL = 'https://api.placekit.co/search';
+      const PLACEKIT_API_KEY = 'pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=';
 
       // Search Place============================================
       let searchResults = [];
@@ -69,21 +60,21 @@ const title = "KMS Weather";
 
       async function searchPlaces(query) {
         const response = await fetch(PLACES_URL, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "x-placekit-api-key": PLACEKIT_API_KEY,
+            'Content-Type': 'application/json',
+            'x-placekit-api-key': PLACEKIT_API_KEY,
           },
           body: JSON.stringify({
             query: query,
-            types: ["country", "city"],
+            types: ['country', 'city'],
             // types: ["country", "city", "administrative"],
             maxResults: 5,
           }),
         });
 
         if (!response.ok) {
-          throw new Error("Placeskit error" + response.status);
+          throw new Error('Placeskit error' + response.status);
         }
 
         const data = await response.json();
@@ -91,11 +82,11 @@ const title = "KMS Weather";
         return searchResults;
       }
 
-      $("#search").on("input", async function () {
+      $('#search').on('input', async function () {
         const query = $(this).val().trim(); //Get what the user typed and remove unnecessary spaces.
 
         if (query.length < 2) {
-          $("#dropdown").addClass("hidden");
+          $('#dropdown').addClass('hidden');
           return;
         }
         const places = await searchPlaces(query);
@@ -105,27 +96,26 @@ const title = "KMS Weather";
       // SHOW Place ===============================================
 
       function renderDropdown(items) {
-        const $dropdown = $("#dropdown");
+        const $dropdown = $('#dropdown');
         $dropdown.empty(); //This removes everything currently inside the <ul>.
 
         if (items.length == 0) {
-          $dropdown.append("<li>No Result</li>");
+          $dropdown.append('<li>No Result</li>');
         }
 
         items.forEach(function (item, index) {
-          
           // show only have info city, administrative or country
-          if(item.city && item.administrative && item.country){
+          if (item.city && item.administrative && item.country) {
             const li = `<li data-index="${index}" class = "hover:bg-gray-100">${item.city}, ${item.administrative}, ${item.country}</li>`;
             $dropdown.append(li);
-          }        
+          }
         });
-        $dropdown.removeClass("hidden");
+        $dropdown.removeClass('hidden');
       }
 
       // Select Place============================================
-      $("#dropdown").on("click", "li[data-index]", function () {
-        const index = $(this).data("index");
+      $('#dropdown').on('click', 'li[data-index]', function () {
+        const index = $(this).data('index');
         // console.log(`index: ${index}`); // 0,1,2...
 
         selectedPlace = searchResults[index];
