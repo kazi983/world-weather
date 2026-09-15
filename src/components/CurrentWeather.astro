@@ -1,0 +1,150 @@
+<section id="current-weather" class="current-weather">
+  <div class="current-weather__header">
+    <div>
+      <p class="current-weather__label">Current Weather</p>
+      <h2 id="current-city">Vancouver</h2>
+      <p id="current-date">Today</p>
+    </div>
+
+    <div
+      id="current-weather-icon"
+      class="current-weather__icon"
+      aria-hidden="true"
+    >
+      ☀️
+    </div>
+  </div>
+
+  <div class="current-weather__main">
+    <p class="current-weather__temperature">
+      <span id="current-temperature">--</span>°C
+    </p>
+
+    <p id="current-condition" class="current-weather__condition">
+      Weather information
+    </p>
+  </div>
+
+  <div class="current-weather__details">
+    <div class="weather-detail">
+      <span>💧</span>
+      <div>
+        <p class="weather-detail__label">Humidity</p>
+        <p id="current-humidity">--%</p>
+      </div>
+    </div>
+
+    <div class="weather-detail">
+      <span>💨</span>
+      <div>
+        <p class="weather-detail__label">Wind</p>
+        <p id="current-wind">-- km/h</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  .current-weather {
+    width: min(100% - 2rem, 900px);
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 10%);
+  }
+
+  .current-weather__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .current-weather__label {
+    margin: 0 0 0.5rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.65;
+  }
+
+  #current-city {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  #current-date {
+    margin: 0.4rem 0 0;
+    opacity: 0.7;
+  }
+
+  .current-weather__icon {
+    font-size: 4rem;
+  }
+
+  .current-weather__main {
+    margin: 2rem 0;
+  }
+
+  .current-weather__temperature {
+    margin: 0;
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .current-weather__condition {
+    margin: 0.75rem 0 0;
+    font-size: 1.2rem;
+  }
+
+  .current-weather__details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .weather-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #f4f7fa;
+  }
+
+  .weather-detail > span {
+    font-size: 1.5rem;
+  }
+
+  .weather-detail p {
+    margin: 0;
+  }
+
+  .weather-detail__label {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.8rem;
+    opacity: 0.65;
+  }
+
+  @media (max-width: 600px) {
+    .current-weather {
+      width: calc(100% - 1.5rem);
+      margin: 1rem auto;
+      padding: 1.25rem;
+    }
+
+    #current-city {
+      font-size: 1.5rem;
+    }
+
+    .current-weather__icon {
+      font-size: 3rem;
+    }
+
+    .current-weather__details {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
