@@ -26,14 +26,14 @@
 <style lang="scss">
   .favorite {
     &Container {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
     &Button svg {
-    fill: none;
-    transition: fill 0.2s ease;
-  }
+      fill: none;
+      transition: fill 0.2s ease;
+    }
     &Button[data-favorited='true'] svg {
       fill: currentColor;
     }
@@ -77,17 +77,17 @@
   }
 
   function displayOptions() {
-    if (favoriteCitiesSelector) {
-      favoriteCitiesSelector.innerHTML = '';
-    }
+    if (!favoriteCitiesSelector) throw new Error(`Failed to get DOM: #favoriteCities`);
 
-    console.log('favoriteCities :>> ', favoriteCities.length);
+    favoriteCitiesSelector.innerHTML = '';
 
     if (favoriteCities.length === 0) {
       const defaultOption = document.createElement('option');
+      defaultOption.value = '';
       defaultOption.textContent = 'Favorites';
-
-      favoriteCitiesSelector?.append(defaultOption);
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      favoriteCitiesSelector.append(defaultOption);
     } else {
       favoriteCities.forEach((favorite) => {
         const cityElement = document.createElement('option');
@@ -100,7 +100,7 @@
           ', ',
         );
 
-        favoriteCitiesSelector?.append(cityElement);
+        favoriteCitiesSelector.append(cityElement);
       });
     }
   }
@@ -117,9 +117,11 @@
   // Event listeners
   // ==========================================================================
 
-  favoriteCitiesSelector?.addEventListener('change', (event) => {
-    const select = event?.currentTarget as HTMLSelectElement;
-    const [lat, lng] = select.value.split(',').map(Number);
+  favoriteCitiesSelector?.addEventListener('change', () => {
+    const selectedOption = favoriteCitiesSelector.selectedOptions[0];
+
+    const lat = selectedOption.dataset.lat;
+    const lng = selectedOption.dataset.lng;
 
     // Pass lat and lng to WeatherAPI
   });
@@ -144,20 +146,20 @@
       type: 'city',
     };
 
-    if (
-      selectedPlace &&
-      favoriteCities.find((favorite) => favorite.coordinates === selectedPlace.coordinates)
-    ) {
-      favoriteButton?.classList.remove('favorite');
+    const isFavorited = favoriteCities.some(
+      (favorite) => favorite.coordinates === selectedPlace.coordinates,
+    );
+
+    if (isFavorited) {
       favoriteCities = favoriteCities.filter(
         (favorite) => favorite.coordinates !== selectedPlace.coordinates,
       );
     } else {
-      favoriteButton?.classList.add('favorite');
       favoriteCities.push(selectedPlace);
     }
 
     localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
+
     displayOptions();
     toggleFavorited();
   });
