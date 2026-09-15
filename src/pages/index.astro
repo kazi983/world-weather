@@ -1,13 +1,41 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import CurrentWeather from '../components/CurrentWeather.astro';
+import DailyForecast from '../components/DailyForecast.astro';
+import HourlyForecast from '../components/HourlyForecast.astro';
 ---
 
 <Layout>
   <main>
-    <!-- Sarai -->
-    <!-- ⚠️ Please overwrite with your Astro component -->
-    <section id="current-weather"></section>
-    <section id="daily-forecast"></section>
-    <section id="hourly-forecast"></section>
+    <!-- Sarai: Weather UI -->
+    <CurrentWeather />
+    <DailyForecast />
+    <HourlyForecast />
   </main>
 </Layout>
+
+<script>
+  type Coords = {
+    latitude: number;
+    longitude: number;
+  };
+
+  // Default: Vancouver
+  const currentCoords: Coords = {
+    latitude: 49.246292,
+    longitude: -123.116226
+  };
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success);
+    }
+  }
+
+  function success(position: GeolocationPosition) {
+    currentCoords.latitude = position.coords.latitude;
+    currentCoords.longitude = position.coords.longitude;
+  }
+
+  getLocation();
+</script>

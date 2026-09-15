@@ -1,0 +1,151 @@
+<section id="hourly-forecast" class="hourly-forecast">
+  <div class="hourly-forecast__heading">
+    <div>
+      <p class="hourly-forecast__label">Hourly Weather</p>
+      <h2>3-Hour Forecast</h2>
+    </div>
+
+    <p id="hourly-selected-day">Today</p>
+  </div>
+
+  <div id="hourly-forecast-list" class="hourly-forecast__list">
+    <div class="hour-card">
+      <span class="hour-card__time">--:--</span>
+      <span class="hour-card__icon">☀️</span>
+      <span class="hour-card__temperature">--°C</span>
+      <span class="hour-card__condition">--</span>
+    </div>
+
+    <div class="hour-card">
+      <span class="hour-card__time">--:--</span>
+      <span class="hour-card__icon">🌤️</span>
+      <span class="hour-card__temperature">--°C</span>
+      <span class="hour-card__condition">--</span>
+    </div>
+
+    <div class="hour-card">
+      <span class="hour-card__time">--:--</span>
+      <span class="hour-card__icon">☁️</span>
+      <span class="hour-card__temperature">--°C</span>
+      <span class="hour-card__condition">--</span>
+    </div>
+
+    <div class="hour-card">
+      <span class="hour-card__time">--:--</span>
+      <span class="hour-card__icon">🌧️</span>
+      <span class="hour-card__temperature">--°C</span>
+      <span class="hour-card__condition">--</span>
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  .hourly-forecast {
+    width: min(100% - 2rem, 900px);
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 10%);
+  }
+
+  .hourly-forecast__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hourly-forecast__label {
+    margin: 0 0 0.4rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.65;
+  }
+
+  .hourly-forecast h2 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+
+  #hourly-selected-day {
+    margin: 0;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  .hourly-forecast__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+
+  .hour-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 1.25rem 0.75rem;
+    border-radius: 1rem;
+    background: #f8fafc;
+  }
+
+  .hour-card__time {
+    font-weight: 700;
+  }
+
+  .hour-card__icon {
+    font-size: 2rem;
+  }
+
+  .hour-card__temperature {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .hour-card__condition {
+    font-size: 0.8rem;
+    opacity: 0.65;
+  }
+
+  @media (max-width: 600px) {
+    .hourly-forecast {
+      width: calc(100% - 1.5rem);
+      margin: 1rem auto;
+      padding: 1.25rem;
+    }
+
+    .hourly-forecast__heading {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .hourly-forecast__list {
+      display: flex;
+      overflow-x: auto;
+      gap: 0.75rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .hour-card {
+      min-width: 115px;
+    }
+  }
+</style>
+<script>
+  const selectedDay =
+    document.querySelector<HTMLElement>('#hourly-selected-day');
+
+  window.addEventListener('forecast-day-selected', (event) => {
+    const customEvent = event as CustomEvent<{
+      dayIndex: number;
+      dayName: string;
+    }>;
+
+    if (selectedDay) {
+      selectedDay.textContent = customEvent.detail.dayName;
+    }
+  });
+</script>
