@@ -66,23 +66,13 @@
 </style>
 
 <script>
-  import { selectedPlace } from '../stores/weatherStore';
-
-  // ==========================================================================
-  // Type
-  // ==========================================================================
-
-  type City = {
-    city: string;
-    administrative: string;
-    country: string;
-    lat: number;
-    lng: number;
-  };
-
-  type FavoriteCity = City & {
-    id: string;
-  };
+  import {
+    selectedPlace,
+    $favoriteCities,
+    isFavorited,
+    toggleFavorite,
+    type FavoriteCity,
+  } from '../stores/weatherStore';
 
   // ==========================================================================
   // DOM
@@ -102,15 +92,6 @@
   // ==========================================================================
 
   /**
-   * Creates a unique identifier for a city based on its coordinates.
-   * @param {City} place - a City instance
-   * @returns {string} A city identifier composed of its latitude and longitude.
-   */
-  function createCityId(place: City): string {
-    return `${place.lat}|${place.lng}`;
-  }
-
-  /**
    * Updates the favorite button state based on whether the selected city is favorited.
    */
   function updateFavoriteButton(): void {
@@ -118,63 +99,16 @@
 
     const place = selectedPlace.get();
 
-    if (!place) {
-      favoriteButton.setAttribute('aria-pressed', 'false');
-      return;
-    }
-
-    const isFavorited = favoriteCities.some(
-      (favorite) => favorite.id === createCityId(place),
+    favoriteButton.setAttribute(
+      'aria-pressed',
+      String(place !== null && isFavorited(place)),
     );
-
-    favoriteButton.setAttribute('aria-pressed', String(isFavorited));
   }
 
   /**
-   * Toggles the favorite status of a city and saves the updated favorites to local storage.
-   *
-   * @param {City} place - The city to add or remove from favorites.
+   * Renders the favorite city list from the given favorites.
    */
-  function toggleFavorite(place: City): void {
-    const cityId = createCityId(place);
-
-    const isFavorited = favoriteCities.some(
-      (favoriteCity) => favoriteCity.id === cityId,
-    );
-
-    if (isFavorited) {
-      favoriteCities = favoriteCities.filter(
-        (favoriteCity) => favoriteCity.id !== cityId,
-      );
-    } else {
-      favoriteCities.push({
-        ...place,
-        id: cityId,
-      });
-    }
-
-    localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
-  }
-
-  /**
-   * Retrieves favorite cities from local storage.
-   *
-   * @returns {FavoriteCity[]} The stored favorite cities, or an empty array if none are stored or the data is invalid.
-   */
-  function getFavoriteCities(): FavoriteCity[] {
-    try {
-      const stored = JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
-
-      return Array.isArray(stored) ? stored : [];
-    } catch {
-      return [];
-    }
-  }
-
-  /**
-   * Updates the favorite city list with the currently stored favorite cities.
-   */
-  function updateFavoriteList(): void {
+  function renderFavoriteList(favoriteCities: readonly FavoriteCity[]): void {
     if (!favoriteList) throw new Error(`Failed to get DOM: #favoriteList`);
 
     favoriteList.innerHTML = '';
@@ -219,8 +153,6 @@
     if (!favoriteListToggleButton)
       throw new Error(`Failed to get DOM: #favoriteListToggleButton`);
 
-    updateFavoriteList();
-
     favoriteList.classList.remove('hidden');
     favoriteListToggleButton.setAttribute('aria-expanded', 'true');
   }
@@ -259,8 +191,6 @@
     if (!place) return;
 
     toggleFavorite(place);
-    updateFavoriteButton();
-    updateFavoriteList();
   });
 
   favoriteList?.addEventListener('click', (event) => {
@@ -289,9 +219,15 @@
   });
 
   // ==========================================================================
-  // Initialize
+  // Store subscriptions
   // ==========================================================================
 
-  let favoriteCities: FavoriteCity[] = getFavoriteCities();
-  updateFavoriteButton();
+  $favoriteCities.subscribe((favoriteCities) => {
+    renderFavoriteList(favoriteCities);
+    updateFavoriteButton();
+  });
+
+  selectedPlace.subscribe(() => {
+    updateFavoriteButton();
+  });
 </script>
