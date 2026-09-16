@@ -12,12 +12,14 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.3.2"
+    "astro": "^7.3.2",
+    "nanostores": "^1.5.3"
   },
   "allowScripts": {
     "esbuild": true
   },
   "devDependencies": {
+    "@types/jquery": "^4.0.1",
     "sass": "^1.104.0"
   }
 }

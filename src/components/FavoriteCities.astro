@@ -41,6 +41,7 @@
 </style>
 
 <script>
+  import { selectedPlace } from '../stores/weatherStore';
   // ==========================================================================
   // Type
   // ==========================================================================
@@ -127,36 +128,22 @@
   });
 
   favoriteButton?.addEventListener('click', () => {
-    // FIXME: replace this with global state
-    let selectedPlace = {
-      name: '大阪市',
-      highlight: '大阪市',
-      city: '大阪市',
-      county: '泉北郡',
-      administrative: '大阪府',
-      country: '日本',
-      administrativecode: '',
-      countrycode: 'jp',
-      countycode: '',
-      zipcode: ['543-0062'],
-      population: 2643805,
-      lat: 34.6937569,
-      lng: 135.5014539,
-      coordinates: '34.6937569, 135.5014539',
-      type: 'city',
-    };
+    const place = selectedPlace.get();
+
+    if(!place){
+      return;
+    }
 
     if (
-      selectedPlace &&
-      favoriteCities.find((favorite) => favorite.coordinates === selectedPlace.coordinates)
+        favoriteCities.find((favorite) => favorite.coordinates === place.coordinates)
     ) {
       favoriteButton?.classList.remove('favorite');
       favoriteCities = favoriteCities.filter(
-        (favorite) => favorite.coordinates !== selectedPlace.coordinates,
+        (favorite) => favorite.coordinates !== place.coordinates,
       );
     } else {
       favoriteButton?.classList.add('favorite');
-      favoriteCities.push(selectedPlace);
+      favoriteCities.push(place);
     }
 
     localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
