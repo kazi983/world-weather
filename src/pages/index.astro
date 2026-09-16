@@ -15,16 +15,40 @@ import HourlyForecast from '../components/HourlyForecast.astro';
 </Layout>
 
 <script>
+  import { selectedPlace } from '../stores/weatherStore';
+  import { getWeather } from '../scripts/weatherApi';
+
   type Coords = {
     latitude: number;
     longitude: number;
   };
 
-  // Default: Vancouver (source: https://www.latlong.net/place/vancouver-bc-canada-2279.html)
+  // Default location: Vancouver
   const currentCoords: Coords = {
     latitude: 49.246292,
     longitude: -123.116226,
   };
+
+  async function loadWeather(
+    latitude: number,
+    longitude: number,
+    city?: string,
+  ) {
+    try {
+      const weatherData = await getWeather(latitude, longitude);
+
+      window.dispatchEvent(
+        new CustomEvent('weatherDataUpdated', {
+          detail: {
+            weather: weatherData,
+            city: city ?? 'Current Location',
+          },
+        }),
+      );
+    } catch (error) {
+      console.error('Failed to load weather:', error);
+    }
+  }
 
   function getLocation() {
     if (navigator.geolocation) {
@@ -35,7 +59,25 @@ import HourlyForecast from '../components/HourlyForecast.astro';
   function success(position: GeolocationPosition) {
     currentCoords.latitude = position.coords.latitude;
     currentCoords.longitude = position.coords.longitude;
+
+    loadWeather(
+      currentCoords.latitude,
+      currentCoords.longitude,
+      'Current Location',
+    );
   }
 
+  selectedPlace.subscribe((place) => {
+    if (!place) {
+      return;
+    }
+
+    loadWeather(place.lat, place.lng, place.city);
+  });
+
+  // Load Vancouver as the default weather
+  loadWeather(currentCoords.latitude, currentCoords.longitude, 'Vancouver');
+
+  // Try to use the user's current location
   getLocation();
 </script>

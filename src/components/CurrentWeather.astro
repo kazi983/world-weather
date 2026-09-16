@@ -1,150 +1,256 @@
-<section id="current-weather" class="current-weather">
-  <div class="current-weather__header">
+<section id="currentWeather" class="currentWeather">
+  <div class="currentWeatherHeader">
     <div>
-      <p class="current-weather__label">Current Weather</p>
-      <h2 id="current-city">Vancouver</h2>
-      <p id="current-date">Today</p>
+      <p class="currentWeatherLabel">Current Weather</p>
+      <h2 id="currentCity">Vancouver</h2>
+      <p id="currentDate">Today</p>
     </div>
 
-    <div
-      id="current-weather-icon"
-      class="current-weather__icon"
-      aria-hidden="true"
+    <span
+      id="currentWeatherIcon"
+      class="currentWeatherIcon"
+      role="img"
+      aria-label="Weather condition"
     >
       ☀️
-    </div>
+    </span>
   </div>
 
-  <div class="current-weather__main">
-    <p class="current-weather__temperature">
-      <span id="current-temperature">--</span>°C
+  <div class="currentWeatherMain">
+    <p class="currentWeatherTemperature">
+      <span id="currentTemperature">--</span>°C
     </p>
 
-    <p id="current-condition" class="current-weather__condition">
-      Weather information
+    <p id="currentCondition" class="currentWeatherCondition">
+      Loading weather...
     </p>
   </div>
 
-  <div class="current-weather__details">
-    <div class="weather-detail">
-      <span>💧</span>
+  <div class="currentWeatherDetails">
+    <div class="weatherDetail">
+      <span aria-hidden="true">💧</span>
       <div>
-        <p class="weather-detail__label">Humidity</p>
-        <p id="current-humidity">--%</p>
+        <p class="weatherDetailLabel">Humidity</p>
+        <p id="currentHumidity">--%</p>
       </div>
     </div>
 
-    <div class="weather-detail">
-      <span>💨</span>
+    <div class="weatherDetail">
+      <span aria-hidden="true">💨</span>
       <div>
-        <p class="weather-detail__label">Wind</p>
-        <p id="current-wind">-- km/h</p>
+        <p class="weatherDetailLabel">Wind</p>
+        <p id="currentWind">-- km/h</p>
       </div>
     </div>
   </div>
 </section>
 
 <style lang="scss">
-  .current-weather {
-    width: min(100% - 2rem, 900px);
+  .currentWeather {
+    width: min(900px, calc(100% - 2rem));
     margin: 2rem auto;
     padding: 2rem;
-    border-radius: 1.5rem;
-    background: #ffffff;
-    box-shadow: 0 10px 30px rgb(0 0 0 / 10%);
+    background: white;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 8%);
   }
 
-  .current-weather__header {
+  .currentWeatherHeader {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
   }
 
-  .current-weather__label {
-    margin: 0 0 0.5rem;
-    font-size: 0.875rem;
+  .currentWeatherLabel {
+    margin: 0 0 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     opacity: 0.65;
   }
 
-  #current-city {
+  .currentWeatherHeader h2 {
     margin: 0;
-    font-size: 2rem;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
   }
 
-  #current-date {
-    margin: 0.4rem 0 0;
-    opacity: 0.7;
+  .currentWeatherHeader p {
+    margin-top: 0.35rem;
   }
 
-  .current-weather__icon {
-    font-size: 4rem;
-  }
-
-  .current-weather__main {
-    margin: 2rem 0;
-  }
-
-  .current-weather__temperature {
-    margin: 0;
+  .currentWeatherIcon {
     font-size: clamp(3rem, 8vw, 5rem);
+  }
+
+  .currentWeatherMain {
+    margin-top: 1.5rem;
+  }
+
+  .currentWeatherTemperature {
+    margin: 0;
+    font-size: clamp(3rem, 10vw, 5rem);
     font-weight: 700;
     line-height: 1;
   }
 
-  .current-weather__condition {
-    margin: 0.75rem 0 0;
-    font-size: 1.2rem;
+  .currentWeatherCondition {
+    margin-top: 0.75rem;
+    font-size: 1.1rem;
   }
 
-  .current-weather__details {
+  .currentWeatherDetails {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    margin-top: 2rem;
   }
 
-  .weather-detail {
+  .weatherDetail {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 1rem;
-    border-radius: 1rem;
-    background: #f4f7fa;
+    background: #f5f7fa;
+    border-radius: 0.9rem;
   }
 
-  .weather-detail > span {
+  .weatherDetail > span {
     font-size: 1.5rem;
   }
 
-  .weather-detail p {
+  .weatherDetail p {
     margin: 0;
   }
 
-  .weather-detail__label {
-    margin-bottom: 0.25rem !important;
+  .weatherDetailLabel {
+    margin-bottom: 0.2rem !important;
     font-size: 0.8rem;
+    font-weight: 600;
     opacity: 0.65;
   }
 
   @media (max-width: 600px) {
-    .current-weather {
-      width: calc(100% - 1.5rem);
-      margin: 1rem auto;
+    .currentWeather {
       padding: 1.25rem;
     }
 
-    #current-city {
-      font-size: 1.5rem;
-    }
-
-    .current-weather__icon {
-      font-size: 3rem;
-    }
-
-    .current-weather__details {
+    .currentWeatherDetails {
       grid-template-columns: 1fr;
     }
   }
 </style>
+
+<script>
+  type WeatherData = {
+    current: {
+      temperature_2m: number;
+      relative_humidity_2m: number;
+      weather_code: number;
+      wind_speed_10m: number;
+    };
+  };
+
+  type WeatherEvent = CustomEvent<{
+    weather: WeatherData;
+    city: string;
+  }>;
+
+  function getWeatherDescription(code: number) {
+    if (code === 0) {
+      return { condition: 'Clear sky', icon: '☀️' };
+    }
+
+    if (code === 1 || code === 2) {
+      return { condition: 'Partly cloudy', icon: '🌤️' };
+    }
+
+    if (code === 3) {
+      return { condition: 'Overcast', icon: '☁️' };
+    }
+
+    if (code === 45 || code === 48) {
+      return { condition: 'Fog', icon: '🌫️' };
+    }
+
+    if (code >= 51 && code <= 57) {
+      return { condition: 'Drizzle', icon: '🌦️' };
+    }
+
+    if (code >= 61 && code <= 67) {
+      return { condition: 'Rain', icon: '🌧️' };
+    }
+
+    if (code >= 71 && code <= 77) {
+      return { condition: 'Snow', icon: '❄️' };
+    }
+
+    if (code >= 80 && code <= 82) {
+      return { condition: 'Rain showers', icon: '🌧️' };
+    }
+
+    if (code >= 85 && code <= 86) {
+      return { condition: 'Snow showers', icon: '🌨️' };
+    }
+
+    if (code >= 95) {
+      return { condition: 'Thunderstorm', icon: '⛈️' };
+    }
+
+    return { condition: 'Unknown', icon: '🌡️' };
+  }
+
+  window.addEventListener('weatherDataUpdated', (event) => {
+    const customEvent = event as WeatherEvent;
+    const { weather, city } = customEvent.detail;
+
+    const temperature = document.querySelector<HTMLElement>(
+      '#currentTemperature',
+    );
+    const humidity = document.querySelector<HTMLElement>('#currentHumidity');
+    const wind = document.querySelector<HTMLElement>('#currentWind');
+    const condition = document.querySelector<HTMLElement>('#currentCondition');
+    const icon = document.querySelector<HTMLElement>('#currentWeatherIcon');
+    const cityElement = document.querySelector<HTMLElement>('#currentCity');
+    const date = document.querySelector<HTMLElement>('#currentDate');
+
+    const weatherDescription = getWeatherDescription(
+      weather.current.weather_code,
+    );
+
+    if (temperature) {
+      temperature.textContent = Math.round(
+        weather.current.temperature_2m,
+      ).toString();
+    }
+
+    if (humidity) {
+      humidity.textContent = `${weather.current.relative_humidity_2m}%`;
+    }
+
+    if (wind) {
+      wind.textContent = `${Math.round(weather.current.wind_speed_10m)} km/h`;
+    }
+
+    if (condition) {
+      condition.textContent = weatherDescription.condition;
+    }
+
+    if (icon) {
+      icon.textContent = weatherDescription.icon;
+    }
+
+    if (cityElement) {
+      cityElement.textContent = city;
+    }
+
+    if (date) {
+      date.textContent = new Date().toLocaleDateString('en-CA', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+  });
+</script>
