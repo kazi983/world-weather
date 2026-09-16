@@ -49,16 +49,17 @@ const title = 'KMS Weather';
     </header>
 
     <slot />
-    <script is:inline>
+    <script>
+      /// <reference types="jquery" />
+      import { selectedPlace } from "../stores/weatherStore";
       // API
       const PLACES_URL = 'https://api.placekit.co/search';
       const PLACEKIT_API_KEY = 'pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=';
 
       // Search Place============================================
-      let searchResults = [];
-      let selectedPlace;
+      let searchResults: any[] = [];
 
-      async function searchPlaces(query) {
+      async function searchPlaces(query: string) {
         const response = await fetch(PLACES_URL, {
           method: 'POST',
           headers: {
@@ -67,9 +68,9 @@ const title = 'KMS Weather';
           },
           body: JSON.stringify({
             query: query,
-            types: ['country', 'city'],
-            // types: ["country", "city", "administrative"],
+            types: ['city'],
             maxResults: 5,
+            language: 'en'
           }),
         });
 
@@ -83,7 +84,7 @@ const title = 'KMS Weather';
       }
 
       $('#search').on('input', async function () {
-        const query = $(this).val().trim(); //Get what the user typed and remove unnecessary spaces.
+        const query = ($(this).val() as string).trim(); //Get what the user typed and remove unnecessary spaces.
 
         if (query.length < 2) {
           $('#dropdown').addClass('hidden');
@@ -95,7 +96,7 @@ const title = 'KMS Weather';
 
       // SHOW Place ===============================================
 
-      function renderDropdown(items) {
+      function renderDropdown(items: any[]) {
         const $dropdown = $('#dropdown');
         $dropdown.empty(); //This removes everything currently inside the <ul>.
 
@@ -113,13 +114,26 @@ const title = 'KMS Weather';
         $dropdown.removeClass('hidden');
       }
 
+      // ux  hide dropdown if click other place when dropdown is open
+      $(document).on("click", function (event) {
+      if (
+        !$(event.target).closest("#search").length &&
+        !$(event.target).closest("#dropdown").length
+      ) {
+        $("#dropdown").addClass("hidden");
+      }
+    });
+
       // Select Place============================================
       $('#dropdown').on('click', 'li[data-index]', function () {
         const index = $(this).data('index');
-        // console.log(`index: ${index}`); // 0,1,2...
+        const place = searchResults[index];
+        selectedPlace.set(place);
+        console.log(selectedPlace.get());
 
-        selectedPlace = searchResults[index];
-        console.log(selectedPlace);
+        $("#search").val(`${place.city}, ${place.administrative}, ${place.country}`); // show selected 
+        // place on search bar.
+        $("#dropdown").addClass("hidden"); // close dropdown when selected 
 
         // console.log(selectedPlace.lat);
         // console.log(selectedPlace.lng);
