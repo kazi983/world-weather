@@ -1,13 +1,14 @@
-<div class="favoriteContainer">
+<div class="min-w-80">
   <div id="favoriteListContainer" class="relative">
     <button
       id="favoriteListToggleButton"
       type="button"
       aria-expanded="false"
       aria-controls="favoriteList"
-      class="left-10 bg-white p-2 border border-gray-300 rounded-lg cursor-pointer"
+      class="flex justify-between p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-left cursor-pointer"
     >
-      Favorites ▼
+      <span>Favorites</span>
+      <span>▼</span>
     </button>
 
     <ul
@@ -17,27 +18,6 @@
     ></ul>
   </div>
 </div>
-
-<style lang="scss">
-  .favorite {
-    &Container {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-    &Button {
-      cursor: pointer;
-      svg {
-        fill: none;
-        transition: fill 0.2s ease;
-      }
-
-      &[aria-pressed='true'] svg {
-        fill: currentColor;
-      }
-    }
-  }
-</style>
 
 <script>
   import {
@@ -104,6 +84,7 @@
         const favoriteCityItem = document.createElement('li');
         const favoriteCityButton = document.createElement('button');
 
+        favoriteCityItem.classList.add();
         favoriteCityButton.dataset.id = favorite.id;
         favoriteCityButton.dataset.lat = String(favorite.lat);
         favoriteCityButton.dataset.lng = String(favorite.lng);
@@ -111,8 +92,11 @@
         favoriteCityButton.classList.add(
           'cursor-pointer',
           'p-2',
-          'transfer-',
           'hover:bg-gray-100',
+          'w-full',
+          'text-left',
+          'transition',
+          'duration-200',
         );
 
         favoriteCityButton.textContent = [
