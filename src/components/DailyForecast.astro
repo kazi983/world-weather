@@ -1,150 +1,252 @@
-<section id="daily-forecast" class="daily-forecast">
-  <div class="daily-forecast__heading">
+<section id="dailyForecast" class="dailyForecast">
+  <div class="dailyForecastHeading">
     <div>
-      <p class="daily-forecast__label">Forecast</p>
+      <p class="dailyForecastLabel">Forecast</p>
       <h2>5-Day Forecast</h2>
     </div>
   </div>
 
-  <div id="daily-forecast-list" class="daily-forecast__list">
-    <button class="forecast-card active" type="button" data-day-index="0">
-      <span class="forecast-card__day">Today</span>
-      <span class="forecast-card__icon">☀️</span>
-      <span class="forecast-card__temperature">--°</span>
-      <span class="forecast-card__condition">--</span>
+  <div id="dailyForecastList" class="dailyForecastList">
+    <button class="forecastCard active" type="button" data-day-index="0">
+      <span class="forecastCardDay">Today</span>
+      <span class="forecastCardIcon">☀️</span>
+      <span class="forecastCardTemperature">--°</span>
+      <span class="forecastCardCondition">--</span>
     </button>
 
-    <button class="forecast-card" type="button" data-day-index="1">
-      <span class="forecast-card__day">Day 2</span>
-      <span class="forecast-card__icon">🌤️</span>
-      <span class="forecast-card__temperature">--°</span>
-      <span class="forecast-card__condition">--</span>
+    <button class="forecastCard" type="button" data-day-index="1">
+      <span class="forecastCardDay">Day 2</span>
+      <span class="forecastCardIcon">🌤️</span>
+      <span class="forecastCardTemperature">--°</span>
+      <span class="forecastCardCondition">--</span>
     </button>
 
-    <button class="forecast-card" type="button" data-day-index="2">
-      <span class="forecast-card__day">Day 3</span>
-      <span class="forecast-card__icon">☁️</span>
-      <span class="forecast-card__temperature">--°</span>
-      <span class="forecast-card__condition">--</span>
+    <button class="forecastCard" type="button" data-day-index="2">
+      <span class="forecastCardDay">Day 3</span>
+      <span class="forecastCardIcon">☁️</span>
+      <span class="forecastCardTemperature">--°</span>
+      <span class="forecastCardCondition">--</span>
     </button>
 
-    <button class="forecast-card" type="button" data-day-index="3">
-      <span class="forecast-card__day">Day 4</span>
-      <span class="forecast-card__icon">🌧️</span>
-      <span class="forecast-card__temperature">--°</span>
-      <span class="forecast-card__condition">--</span>
+    <button class="forecastCard" type="button" data-day-index="3">
+      <span class="forecastCardDay">Day 4</span>
+      <span class="forecastCardIcon">🌧️</span>
+      <span class="forecastCardTemperature">--°</span>
+      <span class="forecastCardCondition">--</span>
     </button>
 
-    <button class="forecast-card" type="button" data-day-index="4">
-      <span class="forecast-card__day">Day 5</span>
-      <span class="forecast-card__icon">☀️</span>
-      <span class="forecast-card__temperature">--°</span>
-      <span class="forecast-card__condition">--</span>
+    <button class="forecastCard" type="button" data-day-index="4">
+      <span class="forecastCardDay">Day 5</span>
+      <span class="forecastCardIcon">☀️</span>
+      <span class="forecastCardTemperature">--°</span>
+      <span class="forecastCardCondition">--</span>
     </button>
   </div>
 </section>
 
 <style lang="scss">
-  .daily-forecast {
-    width: min(100% - 2rem, 900px);
+  .dailyForecast {
+    width: min(900px, calc(100% - 2rem));
     margin: 2rem auto;
     padding: 2rem;
-    border-radius: 1.5rem;
-    background: #ffffff;
-    box-shadow: 0 10px 30px rgb(0 0 0 / 10%);
+    background: white;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 8%);
   }
 
-  .daily-forecast__heading {
+  .dailyForecastHeading {
     margin-bottom: 1.5rem;
   }
 
-  .daily-forecast__label {
-    margin: 0 0 0.4rem;
-    font-size: 0.875rem;
+  .dailyForecastHeading h2 {
+    margin: 0;
+  }
+
+  .dailyForecastLabel {
+    margin: 0 0 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     opacity: 0.65;
   }
 
-  .daily-forecast h2 {
-    margin: 0;
-    font-size: 1.6rem;
-  }
-
-  .daily-forecast__list {
+  .dailyForecastList {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 0.75rem;
   }
 
-  .forecast-card {
+  .forecastCard {
     display: flex;
+    min-width: 0;
     flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
-    padding: 1rem 0.5rem;
-    border: 1px solid #e5e7eb;
+    gap: 0.65rem;
+    padding: 1.25rem 0.75rem;
+    border: 1px solid #dfe3e8;
     border-radius: 1rem;
-    background: #f8fafc;
-    color: inherit;
-    font: inherit;
+    background: #f7f9fb;
     cursor: pointer;
     transition:
       transform 0.2s ease,
-      box-shadow 0.2s ease;
+      border-color 0.2s ease;
   }
 
-  .forecast-card:hover {
+  .forecastCard:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgb(0 0 0 / 8%);
   }
 
-  .forecast-card.active {
+  .forecastCard.active {
     border: 2px solid #64748b;
     background: #eef2f7;
   }
 
-  .forecast-card__day {
+  .forecastCardDay {
     font-weight: 700;
   }
 
-  .forecast-card__icon {
+  .forecastCardIcon {
     font-size: 2rem;
   }
 
-  .forecast-card__temperature {
-    font-size: 1.25rem;
+  .forecastCardTemperature {
+    font-size: 1.15rem;
     font-weight: 700;
   }
 
-  .forecast-card__condition {
+  .forecastCardCondition {
     font-size: 0.8rem;
-    opacity: 0.65;
+    text-align: center;
+    opacity: 0.7;
   }
 
-  @media (max-width: 600px) {
-    .daily-forecast {
-      width: calc(100% - 1.5rem);
-      margin: 1rem auto;
+  @media (max-width: 700px) {
+    .dailyForecast {
       padding: 1.25rem;
     }
 
-    .daily-forecast__list {
+    .dailyForecastList {
       display: flex;
       overflow-x: auto;
-      gap: 0.75rem;
       padding-bottom: 0.5rem;
     }
 
-    .forecast-card {
-      min-width: 110px;
+    .forecastCard {
+      min-width: 130px;
     }
   }
 </style>
+
 <script>
-  const forecastCards = document.querySelectorAll<HTMLButtonElement>(
-    '.forecast-card'
-  );
+  type DailyWeather = {
+    daily: {
+      time: string[];
+      weather_code: number[];
+      temperature_2m_max: number[];
+      temperature_2m_min: number[];
+    };
+  };
+
+  type WeatherEvent = CustomEvent<{
+    weather: DailyWeather;
+    city: string;
+  }>;
+
+  function getWeatherDescription(code: number) {
+    if (code === 0) {
+      return { condition: 'Clear', icon: '☀️' };
+    }
+
+    if (code === 1 || code === 2) {
+      return { condition: 'Partly cloudy', icon: '🌤️' };
+    }
+
+    if (code === 3) {
+      return { condition: 'Overcast', icon: '☁️' };
+    }
+
+    if (code === 45 || code === 48) {
+      return { condition: 'Fog', icon: '🌫️' };
+    }
+
+    if (code >= 51 && code <= 57) {
+      return { condition: 'Drizzle', icon: '🌦️' };
+    }
+
+    if (code >= 61 && code <= 67) {
+      return { condition: 'Rain', icon: '🌧️' };
+    }
+
+    if (code >= 71 && code <= 77) {
+      return { condition: 'Snow', icon: '❄️' };
+    }
+
+    if (code >= 80 && code <= 82) {
+      return { condition: 'Showers', icon: '🌧️' };
+    }
+
+    if (code >= 85 && code <= 86) {
+      return { condition: 'Snow showers', icon: '🌨️' };
+    }
+
+    if (code >= 95) {
+      return { condition: 'Thunderstorm', icon: '⛈️' };
+    }
+
+    return { condition: 'Unknown', icon: '🌡️' };
+  }
+
+  const forecastCards =
+    document.querySelectorAll<HTMLButtonElement>('.forecastCard');
+
+  window.addEventListener('weatherDataUpdated', (event) => {
+    const customEvent = event as WeatherEvent;
+    const { daily } = customEvent.detail.weather;
+
+    forecastCards.forEach((card, index) => {
+      const dayElement = card.querySelector<HTMLElement>('.forecastCardDay');
+      const iconElement = card.querySelector<HTMLElement>('.forecastCardIcon');
+      const temperatureElement = card.querySelector<HTMLElement>(
+        '.forecastCardTemperature',
+      );
+      const conditionElement = card.querySelector<HTMLElement>(
+        '.forecastCardCondition',
+      );
+
+      const date = new Date(`${daily.time[index]}T12:00:00`);
+
+      const dayName =
+        index === 0
+          ? 'Today'
+          : date.toLocaleDateString('en-CA', {
+              weekday: 'short',
+            });
+
+      const weatherDescription = getWeatherDescription(
+        daily.weather_code[index],
+      );
+
+      if (dayElement) {
+        dayElement.textContent = dayName;
+      }
+
+      if (iconElement) {
+        iconElement.textContent = weatherDescription.icon;
+      }
+
+      if (temperatureElement) {
+        const max = Math.round(daily.temperature_2m_max[index]);
+        const min = Math.round(daily.temperature_2m_min[index]);
+
+        temperatureElement.textContent = `${max}° / ${min}°`;
+      }
+
+      if (conditionElement) {
+        conditionElement.textContent = weatherDescription.condition;
+      }
+    });
+  });
 
   forecastCards.forEach((card) => {
     card.addEventListener('click', () => {
@@ -155,16 +257,17 @@
       card.classList.add('active');
 
       const dayIndex = Number(card.dataset.dayIndex);
+
       const dayName =
-        card.querySelector('.forecast-card__day')?.textContent ?? 'Today';
+        card.querySelector('.forecastCardDay')?.textContent ?? 'Today';
 
       window.dispatchEvent(
-        new CustomEvent('forecast-day-selected', {
+        new CustomEvent('forecastDaySelected', {
           detail: {
             dayIndex,
-            dayName
-          }
-        })
+            dayName,
+          },
+        }),
       );
     });
   });
