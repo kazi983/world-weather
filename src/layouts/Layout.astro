@@ -28,6 +28,9 @@ const title = 'KMS Weather';
   </head>
   <body>
     <header class="p-3">
+
+      <div id="globe"></div>
+      
       <div class="flex sm:flex-row flex-col justify-between">
         <h1 class="mb-6 font-bold text-3xl text-center">{title}</h1>
 
@@ -55,7 +58,10 @@ const title = 'KMS Weather';
     <slot />
     <script>
       /// <reference types="jquery" />
-      import { selectedPlace } from '../stores/weatherStore';
+      import { globalEval } from 'jquery';
+import { selectedPlace } from '../stores/weatherStore';
+
+      import Globe from 'globe.gl';
       // API
       const PLACES_URL = 'https://api.placekit.co/search';
       const PLACEKIT_API_KEY =
@@ -134,7 +140,7 @@ const title = 'KMS Weather';
         const index = $(this).data('index');
         const place = searchResults[index];
         selectedPlace.set(place);
-        console.log(selectedPlace.get());
+        // console.log(selectedPlace.get());
 
         $('#search').val(
           `${place.city}, ${place.administrative}, ${place.country}`,
@@ -142,9 +148,30 @@ const title = 'KMS Weather';
         // place on search bar.
         $('#dropdown').addClass('hidden'); // close dropdown when selected
 
-        // console.log(selectedPlace.lat);
-        // console.log(selectedPlace.lng);
+        // Move glove to selected city
+        globe.pointOfView({
+          lat: place.lat,
+          lng: place.lng,
+          altitude: 1.5,
+        }, 1000);
+
+          // Flight route
+        // globe.arcsData([
+        //   {
+        //     startLat: 49.2827,
+        //     startLng: -123.1207,
+        //     endLat: place.lat,
+        //     endLng: place.lng,
+        //   },
+        // ]);
       });
+
+      // Glove=====================
+
+        const globe = new Globe(document.getElementById('globe')!);
+
+        globe
+          .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
     </script>
   </body>
 </html>
