@@ -48,10 +48,7 @@ const title = 'KMS Weather';
         />
 
         <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
-        <ul
-          id="dropdown"
-        ></ul>
-
+        <ul id="dropdown"></ul>
       </div>
     </header>
 
@@ -118,7 +115,7 @@ import { selectedPlace } from '../stores/weatherStore';
         items.forEach(function (item, index) {
           // show only have info city, administrative or country
           if (item.city && item.administrative && item.country) {
-            const li = `<li data-index="${index}" class = "hover:bg-gray-100">${item.city}, ${item.administrative}, ${item.country}</li>`;
+            const li = `<li data-index="${index}">${item.city}, ${item.administrative}, ${item.country}</li>`;
             $dropdown.append(li);
           }
         });

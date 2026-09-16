@@ -5,7 +5,7 @@
       type="button"
       aria-expanded="false"
       aria-controls="favoriteList"
-      class="flex justify-between p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-left cursor-pointer"
+      class="flex justify-between p-3 border border-white/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-left text-white bg-white/10 backdrop-blur-md cursor-pointer"
     >
       <span>Favorites</span>
       <span>▼</span>
@@ -14,7 +14,7 @@
     <ul
       id="favoriteList"
       aria-expanded="false"
-      class="hidden top-full right-0 left-0 z-1 absolute bg-white shadow-lg mt-1 py-1 border border-gray-300 rounded-2xl max-h-56 overflow-auto text-sm"
+      class="hidden top-full right-0 left-0 z-1 absolute bg-slate-900/70 backdrop-blur-md shadow-lg mt-1 py-1 border border-white/15 rounded-2xl max-h-56 overflow-auto text-sm text-white"
     ></ul>
   </div>
 </div>
@@ -74,7 +74,7 @@
         'cursor-pointer',
         'p-2',
         'transfer-',
-        'hover:bg-gray-100',
+        'hover:bg-white/10',
       );
       placeHolder.textContent = '---';
 
@@ -92,7 +92,7 @@
         favoriteCityButton.classList.add(
           'cursor-pointer',
           'p-2',
-          'hover:bg-gray-100',
+          'hover:bg-white/10',
           'w-full',
           'text-left',
           'transition',
