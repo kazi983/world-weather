@@ -113,6 +113,16 @@ const title = 'KMS Weather';
         $dropdown.removeClass('hidden');
       }
 
+      // ux  hide dropdown if click other place when dropdown is open
+      $(document).on("click", function (event) {
+      if (
+        !$(event.target).closest("#search").length &&
+        !$(event.target).closest("#dropdown").length
+      ) {
+        $("#dropdown").addClass("hidden");
+      }
+    });
+
       // Select Place============================================
       $('#dropdown').on('click', 'li[data-index]', function () {
         const index = $(this).data('index');
