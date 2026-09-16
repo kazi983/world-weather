@@ -1,13 +1,14 @@
-<div class="favoriteContainer">
+<div class="min-w-80">
   <div id="favoriteListContainer" class="relative">
     <button
       id="favoriteListToggleButton"
       type="button"
       aria-expanded="false"
       aria-controls="favoriteList"
-      class="left-10 bg-white p-2 border border-gray-300 rounded-lg cursor-pointer"
+      class="flex justify-between p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-left cursor-pointer"
     >
-      Favorites ▼
+      <span>Favorites</span>
+      <span>▼</span>
     </button>
 
     <ul
@@ -16,73 +17,16 @@
       class="hidden top-full right-0 left-0 z-1 absolute bg-white shadow-lg mt-1 py-1 border border-gray-300 rounded-2xl max-h-56 overflow-auto text-sm"
     ></ul>
   </div>
-
-  <!-- TODO move into weather card -->
-  <button
-    id="favoriteButton"
-    class="favoriteButton"
-    type="button"
-    aria-pressed="false"
-    aria-label="Add to favorites"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      data-lucide="star"
-      aria-hidden="true"
-      class="lucide lucide-star"
-    >
-      <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
-    </svg>
-  </button>
 </div>
 
-<style lang="scss">
-  .favorite {
-    &Container {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-    &Button {
-      cursor: pointer;
-      svg {
-        fill: none;
-        transition: fill 0.2s ease;
-      }
-
-      &[aria-pressed='true'] svg {
-        fill: currentColor;
-      }
-    }
-  }
-</style>
-
 <script>
-  import { selectedPlace } from '../stores/weatherStore';
-
-  // ==========================================================================
-  // Type
-  // ==========================================================================
-
-  type City = {
-    city: string;
-    administrative: string;
-    country: string;
-    lat: number;
-    lng: number;
-  };
-
-  type FavoriteCity = City & {
-    id: string;
-  };
+  import {
+    selectedPlace,
+    $favoriteCities,
+    isFavorited,
+    toggleFavorite,
+    type FavoriteCity,
+  } from '../stores/weatherStore';
 
   // ==========================================================================
   // DOM
@@ -102,15 +46,6 @@
   // ==========================================================================
 
   /**
-   * Creates a unique identifier for a city based on its coordinates.
-   * @param {City} place - a City instance
-   * @returns {string} A city identifier composed of its latitude and longitude.
-   */
-  function createCityId(place: City): string {
-    return `${place.lat}|${place.lng}`;
-  }
-
-  /**
    * Updates the favorite button state based on whether the selected city is favorited.
    */
   function updateFavoriteButton(): void {
@@ -118,76 +53,38 @@
 
     const place = selectedPlace.get();
 
-    if (!place) {
-      favoriteButton.setAttribute('aria-pressed', 'false');
-      return;
-    }
-
-    const isFavorited = favoriteCities.some(
-      (favorite) => favorite.id === createCityId(place),
+    favoriteButton.setAttribute(
+      'aria-pressed',
+      String(place !== null && isFavorited(place)),
     );
-
-    favoriteButton.setAttribute('aria-pressed', String(isFavorited));
   }
 
   /**
-   * Toggles the favorite status of a city and saves the updated favorites to local storage.
-   *
-   * @param {City} place - The city to add or remove from favorites.
+   * Renders the favorite city list from the given favorites.
    */
-  function toggleFavorite(place: City): void {
-    const cityId = createCityId(place);
-
-    const isFavorited = favoriteCities.some(
-      (favoriteCity) => favoriteCity.id === cityId,
-    );
-
-    if (isFavorited) {
-      favoriteCities = favoriteCities.filter(
-        (favoriteCity) => favoriteCity.id !== cityId,
-      );
-    } else {
-      favoriteCities.push({
-        ...place,
-        id: cityId,
-      });
-    }
-
-    localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
-  }
-
-  /**
-   * Retrieves favorite cities from local storage.
-   *
-   * @returns {FavoriteCity[]} The stored favorite cities, or an empty array if none are stored or the data is invalid.
-   */
-  function getFavoriteCities(): FavoriteCity[] {
-    try {
-      const stored = JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
-
-      return Array.isArray(stored) ? stored : [];
-    } catch {
-      return [];
-    }
-  }
-
-  /**
-   * Updates the favorite city list with the currently stored favorite cities.
-   */
-  function updateFavoriteList(): void {
+  function renderFavoriteList(favoriteCities: readonly FavoriteCity[]): void {
     if (!favoriteList) throw new Error(`Failed to get DOM: #favoriteList`);
 
     favoriteList.innerHTML = '';
 
     if (favoriteCities.length === 0) {
-      const defaultOption = document.createElement('li');
-      defaultOption.textContent = '---';
-      favoriteList.append(defaultOption);
+      const placeHolder = document.createElement('li');
+
+      placeHolder.classList.add(
+        'cursor-pointer',
+        'p-2',
+        'transfer-',
+        'hover:bg-gray-100',
+      );
+      placeHolder.textContent = '---';
+
+      favoriteList.append(placeHolder);
     } else {
       favoriteCities.forEach((favorite) => {
         const favoriteCityItem = document.createElement('li');
         const favoriteCityButton = document.createElement('button');
 
+        favoriteCityItem.classList.add();
         favoriteCityButton.dataset.id = favorite.id;
         favoriteCityButton.dataset.lat = String(favorite.lat);
         favoriteCityButton.dataset.lng = String(favorite.lng);
@@ -195,8 +92,11 @@
         favoriteCityButton.classList.add(
           'cursor-pointer',
           'p-2',
-          'transfer-',
           'hover:bg-gray-100',
+          'w-full',
+          'text-left',
+          'transition',
+          'duration-200',
         );
 
         favoriteCityButton.textContent = [
@@ -218,8 +118,6 @@
     if (!favoriteList) throw new Error(`Failed to get DOM: #favoriteList`);
     if (!favoriteListToggleButton)
       throw new Error(`Failed to get DOM: #favoriteListToggleButton`);
-
-    updateFavoriteList();
 
     favoriteList.classList.remove('hidden');
     favoriteListToggleButton.setAttribute('aria-expanded', 'true');
@@ -259,8 +157,6 @@
     if (!place) return;
 
     toggleFavorite(place);
-    updateFavoriteButton();
-    updateFavoriteList();
   });
 
   favoriteList?.addEventListener('click', (event) => {
@@ -289,9 +185,15 @@
   });
 
   // ==========================================================================
-  // Initialize
+  // Store subscriptions
   // ==========================================================================
 
-  let favoriteCities: FavoriteCity[] = getFavoriteCities();
-  updateFavoriteButton();
+  $favoriteCities.subscribe((favoriteCities) => {
+    renderFavoriteList(favoriteCities);
+    updateFavoriteButton();
+  });
+
+  selectedPlace.subscribe(() => {
+    updateFavoriteButton();
+  });
 </script>
