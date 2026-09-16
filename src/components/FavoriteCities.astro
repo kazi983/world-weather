@@ -23,20 +23,20 @@
   </button>
 </div>
 
-<style>
-  .favoriteContainer {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .favoriteContainer .favoriteButton svg {
-    stroke: black;
-    fill: none;
-    transition: fill 0.2s ease;
-  }
-  .favoriteContainer .favoriteButton.favorite svg {
-    fill: black;
+<style lang="scss">
+  .favorite {
+    &Container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    &Button svg {
+      fill: none;
+      transition: fill 0.2s ease;
+    }
+    &Button[data-favorited='true'] svg {
+      fill: currentColor;
+    }
   }
 </style>
 
@@ -56,12 +56,6 @@
   };
 
   // ==========================================================================
-  // Global variables
-  // ==========================================================================
-
-  let favoriteCities: City[] = JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
-
-  // ==========================================================================
   // DOM
   // ==========================================================================
 
@@ -72,26 +66,29 @@
   // Functions
   // ==========================================================================
 
-  function toggleFavoriteStyle(value: string) {
-    if (favoriteCities.find((favorite) => `${favorite.lat},${favorite.lng}` === value)) {
-      favoriteButton?.classList.add('favorite');
-    } else {
-      favoriteButton?.classList.remove('favorite');
-    }
+  function toggleFavorited() {
+    if (!favoriteButton) throw new Error(`Failed to get DOM: #favoriteButton`);
+    if (!favoriteCitiesSelector) throw new Error(`Failed to get DOM: #favoriteCities`);
+
+    const isFavorited = favoriteCities.some(
+      (favorite) => favorite.coordinates === favoriteCitiesSelector.value,
+    );
+
+    favoriteButton.dataset.favorited = String(isFavorited);
   }
 
   function displayOptions() {
-    if (favoriteCitiesSelector) {
-      favoriteCitiesSelector.innerHTML = '';
-    }
+    if (!favoriteCitiesSelector) throw new Error(`Failed to get DOM: #favoriteCities`);
 
-    console.log('favoriteCities :>> ', favoriteCities.length);
+    favoriteCitiesSelector.innerHTML = '';
 
     if (favoriteCities.length === 0) {
       const defaultOption = document.createElement('option');
+      defaultOption.value = '';
       defaultOption.textContent = 'Favorites';
-
-      favoriteCitiesSelector?.append(defaultOption);
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      favoriteCitiesSelector.append(defaultOption);
     } else {
       favoriteCities.forEach((favorite) => {
         const cityElement = document.createElement('option');
@@ -104,25 +101,28 @@
           ', ',
         );
 
-        favoriteCitiesSelector?.append(cityElement);
+        favoriteCitiesSelector.append(cityElement);
       });
     }
   }
 
-  // ==========================================================================
-  // Initial display
-  // ==========================================================================
-
-  displayOptions();
-  toggleFavoriteStyle(favoriteCitiesSelector?.value ?? '');
+  function getFavoriteCities(): City[] {
+    try {
+      return JSON.parse(localStorage.getItem('favoriteCities') ?? '[]');
+    } catch {
+      return [];
+    }
+  }
 
   // ==========================================================================
   // Event listeners
   // ==========================================================================
 
-  favoriteCitiesSelector?.addEventListener('change', (event) => {
-    const select = event?.currentTarget as HTMLSelectElement;
-    const [lat, lng] = select.value.split(',').map(Number);
+  favoriteCitiesSelector?.addEventListener('change', () => {
+    const selectedOption = favoriteCitiesSelector.selectedOptions[0];
+
+    const lat = selectedOption.dataset.lat;
+    const lng = selectedOption.dataset.lng;
 
     // Pass lat and lng to WeatherAPI
   });
@@ -134,19 +134,29 @@
       return;
     }
 
-    if (
-        favoriteCities.find((favorite) => favorite.coordinates === place.coordinates)
-    ) {
-      favoriteButton?.classList.remove('favorite');
+    const isFavorited = favoriteCities.some(
+      (favorite) => favorite.coordinates === place.coordinates,
+    );
+
+    if (isFavorited) {
       favoriteCities = favoriteCities.filter(
         (favorite) => favorite.coordinates !== place.coordinates,
       );
     } else {
-      favoriteButton?.classList.add('favorite');
       favoriteCities.push(place);
     }
 
     localStorage.setItem('favoriteCities', JSON.stringify(favoriteCities));
+
     displayOptions();
+    toggleFavorited();
   });
+
+  // ==========================================================================
+  // Initialize
+  // ==========================================================================
+
+  let favoriteCities = getFavoriteCities();
+  displayOptions();
+  toggleFavorited();
 </script>
