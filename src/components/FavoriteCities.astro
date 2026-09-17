@@ -27,6 +27,7 @@
     toggleFavorite,
     type FavoriteCity,
   } from '../stores/weatherStore';
+  import { moveGlobe } from '../scripts/globe';
 
   // ==========================================================================
   // DOM
@@ -169,6 +170,7 @@
 
     if (favorite) {
       selectedPlace.set(favorite);
+      moveGlobe(favorite);
     }
 
     closeFavoriteList();
