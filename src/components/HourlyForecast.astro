@@ -14,13 +14,19 @@
 </section>
 
 <style lang="scss">
+  @use '../sass/variables' as *;
+
   .hourlyForecast {
     width: min(900px, calc(100% - 2rem));
     margin: 2rem auto;
     padding: 2rem;
-    background: white;
+    background: $panel-bg;
+    border: 1px solid $panel-border;
     border-radius: 1.25rem;
-    box-shadow: 0 10px 30px rgb(0 0 0 / 8%);
+    color: $text-primary;
+    backdrop-filter: blur($panel-blur);
+    -webkit-backdrop-filter: blur($panel-blur);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
   }
 
   .hourlyForecastHeading {
@@ -65,8 +71,10 @@
     align-items: center;
     gap: 0.65rem;
     padding: 1.25rem 0.75rem;
-    background: #f7f9fb;
+    background: $chip-bg;
+    border: 1px solid $chip-border;
     border-radius: 1rem;
+    color: $text-primary;
   }
 
   .hourCardTime {
