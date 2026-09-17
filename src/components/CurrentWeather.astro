@@ -188,6 +188,8 @@
 </style>
 
 <script>
+  import { countryCodeEmoji } from 'country-code-emoji';
+
   type WeatherData = {
     current: {
       temperature_2m: number;
@@ -200,6 +202,7 @@
   type WeatherEvent = CustomEvent<{
     weather: WeatherData;
     city: string;
+    countryCode: string | null;
   }>;
 
   function getWeatherDescription(code: number) {
@@ -248,7 +251,8 @@
 
   window.addEventListener('weatherDataUpdated', (event) => {
     const customEvent = event as WeatherEvent;
-    const { weather, city } = customEvent.detail;
+    const { weather, city, countryCode } = customEvent.detail;
+    const countryFlag = countryCode ? countryCodeEmoji(countryCode) : null;
 
     const temperature = document.querySelector<HTMLElement>(
       '#currentTemperature',
@@ -287,7 +291,7 @@
     }
 
     if (cityElement) {
-      cityElement.textContent = city;
+      cityElement.textContent = countryFlag ? countryFlag + ' ' + city : city;
     }
 
     if (date) {

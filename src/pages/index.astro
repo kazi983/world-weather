@@ -17,6 +17,7 @@ import HourlyForecast from '../components/HourlyForecast.astro';
 <script>
   import { selectedPlace } from '../stores/weatherStore';
   import { getWeather } from '../scripts/weatherApi';
+  import { getGeolocation } from '../scripts/geolocationApi';
 
   type Coords = {
     latitude: number;
@@ -33,15 +34,16 @@ import HourlyForecast from '../components/HourlyForecast.astro';
     latitude: number,
     longitude: number,
     city?: string,
+    countryCode?: string,
   ) {
     try {
       const weatherData = await getWeather(latitude, longitude);
-
       window.dispatchEvent(
         new CustomEvent('weatherDataUpdated', {
           detail: {
             weather: weatherData,
             city: city ?? 'Current Location',
+            countryCode: countryCode ?? '',
           },
         }),
       );
@@ -56,28 +58,41 @@ import HourlyForecast from '../components/HourlyForecast.astro';
     }
   }
 
-  function success(position: GeolocationPosition) {
+  async function success(position: GeolocationPosition) {
     currentCoords.latitude = position.coords.latitude;
     currentCoords.longitude = position.coords.longitude;
+
+    const city = await getGeolocation(
+      currentCoords.latitude,
+      currentCoords.longitude,
+    );
 
     loadWeather(
       currentCoords.latitude,
       currentCoords.longitude,
-      'Current Location',
+      city.city ?? 'Current Location',
+      city.countryCode ?? '',
     );
   }
 
   // Load Vancouver as the default weather
   function fallback() {
-    loadWeather(currentCoords.latitude, currentCoords.longitude, 'Vancouver');
+    loadWeather(
+      currentCoords.latitude,
+      currentCoords.longitude,
+      'Vancouver',
+      'CA',
+    );
   }
 
   selectedPlace.subscribe((place) => {
     if (!place) {
       return;
     }
+    console.log('place :>> ', place);
 
-    loadWeather(place.lat, place.lng, place.city);
+    console.log('place.countryCode', place.countrycode);
+    loadWeather(place.lat, place.lng, place.city, place.countrycode);
   });
 
   // Try to use the user's current location

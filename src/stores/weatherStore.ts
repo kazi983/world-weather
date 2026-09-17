@@ -4,6 +4,7 @@ type City = {
   city: string;
   administrative: string;
   country: string;
+  countrycode: string;
   lat: number;
   lng: number;
   coordinates: string;
