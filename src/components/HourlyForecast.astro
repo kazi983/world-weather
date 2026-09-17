@@ -63,7 +63,7 @@
     padding-bottom: 0.5rem;
   }
 
-  .hourCard {
+  :global(.hourCard) {
     display: flex;
     min-width: 130px;
     flex: 1;
@@ -80,25 +80,25 @@
       background 0.2s ease;
   }
 
-  .hourCard:hover {
+  :global(.hourCard:hover) {
     transform: translateY(-3px);
     background: $chip-bg-hover;
   }
 
-  .hourCardTime {
+  :global(.hourCardTime) {
     font-weight: 700;
   }
 
-  .hourCardIcon {
+  :global(.hourCardIcon) {
     font-size: 2rem;
   }
 
-  .hourCardTemperature {
+  :global(.hourCardTemperature) {
     font-size: 1.1rem;
     font-weight: 700;
   }
 
-  .hourCardCondition {
+  :global(.hourCardCondition) {
     font-size: 0.8rem;
     text-align: center;
     opacity: 0.7;
@@ -118,7 +118,7 @@
       flex-direction: column;
     }
 
-    .hourCard {
+    :global(.hourCard) {
       min-width: 120px;
     }
   }
@@ -248,15 +248,11 @@
       iconElement.textContent = description.icon;
 
       const temperatureElement = document.createElement('span');
-
       temperatureElement.className = 'hourCardTemperature';
-
       temperatureElement.textContent = `${Math.round(temperature)}${unit}`;
 
       const conditionElement = document.createElement('span');
-
       conditionElement.className = 'hourCardCondition';
-
       conditionElement.textContent = description.condition;
 
       hourCard.append(
