@@ -86,8 +86,6 @@
 
         favoriteCityItem.classList.add();
         favoriteCityButton.dataset.id = favorite.id;
-        favoriteCityButton.dataset.lat = String(favorite.lat);
-        favoriteCityButton.dataset.lng = String(favorite.lng);
         favoriteCityButton.type = 'button';
         favoriteCityButton.classList.add(
           'cursor-pointer',
@@ -166,12 +164,12 @@
     const cityButton = target.closest('button');
     if (!cityButton) return;
 
-    const lat = cityButton.dataset.lat;
-    const lng = cityButton.dataset.lng;
+    const id = cityButton.dataset.id;
+    const favorite = $favoriteCities.get().find((city) => city.id === id);
 
-    // TODO Pass lat and lng to WeatherAPI
-    // console.log('lat :>> ', lat);
-    // console.log('lng :>> ', lng);
+    if (favorite) {
+      selectedPlace.set(favorite);
+    }
 
     closeFavoriteList();
   });
