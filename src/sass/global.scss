@@ -9,6 +9,24 @@ body {
   color: $text-primary;
 }
 
+
+
+  // Glove
+#globe {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  // opacity: 0.8;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+
 // Keeps the header/content readable above a full-bleed globe canvas,
 // whether the globe is fixed-positioned or simply first in the DOM.
 body > header,
@@ -73,6 +91,7 @@ body > header h1 {
       }
     }
   }
+
 
   @media (max-width: 375px) {
     // Mobile styles
