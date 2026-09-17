@@ -19,7 +19,7 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
 </Layout>
 
 <script>
-  import { selectedPlace } from '../stores/weatherStore';
+  import { type City, selectedPlace } from '../stores/weatherStore';
   import { getWeather } from '../scripts/weatherApi';
   import { getGeolocation } from '../scripts/geolocationApi';
 
@@ -66,16 +66,31 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
     currentCoords.latitude = position.coords.latitude;
     currentCoords.longitude = position.coords.longitude;
 
-    const city = await getGeolocation(
+    const geolocation = await getGeolocation(
       currentCoords.latitude,
       currentCoords.longitude,
     );
 
+    let city: City | undefined;
+
+    if (geolocation) {
+      city = {
+        city: geolocation.city,
+        administrative: geolocation.principalSubdivision,
+        country: geolocation.countryName,
+        countrycode: geolocation.countryCode,
+        lat: geolocation.latitude,
+        lng: geolocation.longitude,
+      };
+
+      selectedPlace.set(city);
+    }
+
     loadWeather(
       currentCoords.latitude,
       currentCoords.longitude,
-      city.city ?? 'Current Location',
-      city.countryCode ?? '',
+      city?.city ?? 'Current Location',
+      city?.countrycode ?? '',
     );
   }
 
@@ -93,9 +108,7 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
     if (!place) {
       return;
     }
-    console.log('place :>> ', place);
 
-    console.log('place.countryCode', place.countrycode);
     loadWeather(place.lat, place.lng, place.city, place.countrycode);
   });
 
