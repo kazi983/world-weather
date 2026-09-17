@@ -43,7 +43,7 @@ const title = 'KMS Weather';
           <input
             id="search"
             type="text"
-            placeholder="Type a city or address"
+            placeholder="Search a city..."
             autocomplete="off"
           />
 
@@ -63,7 +63,6 @@ const title = 'KMS Weather';
       const PLACEKIT_API_KEY =
         'pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=';
 
-        
       // Glove=====================
 
       const globe = new Globe(document.getElementById('globe')!);
@@ -72,7 +71,7 @@ const title = 'KMS Weather';
         '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
       );
       globe.controls().autoRotate = true;
-globe.controls().autoRotateSpeed = 0.5;
+      globe.controls().autoRotateSpeed = 0.5;
 
       // Search Place============================================
       let searchResults: any[] = [];
@@ -149,13 +148,11 @@ globe.controls().autoRotateSpeed = 0.5;
         selectedPlace.set(place);
         // console.log(selectedPlace.get());
 
-        $('#search').val(
-          `${place.city}, ${place.administrative}, ${place.country}`,
-        ); // show selected
+        $('#search').val(``); // show selected
         // place on search bar.
         $('#dropdown').addClass('hidden'); // close dropdown when selected
 
-        // stop moving 
+        // stop moving
         globe.controls().autoRotate = false;
         // Move glove to selected city
         globe.pointOfView(
@@ -201,7 +198,6 @@ globe.controls().autoRotateSpeed = 0.5;
           .labelDotRadius(0.5)
           .labelAltitude(0.12);
       });
-
     </script>
   </body>
 </html>
