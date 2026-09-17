@@ -3,10 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import CurrentWeather from '../components/CurrentWeather.astro';
 import DailyForecast from '../components/DailyForecast.astro';
 import HourlyForecast from '../components/HourlyForecast.astro';
+import TemperatureToggle from '../components/TemperatureToggle.astro';
 ---
 
 <Layout>
   <main>
+    <!-- Sarai: Temperature Unit Toggle -->
+    <TemperatureToggle />
+
     <!-- Sarai: Weather UI -->
     <CurrentWeather />
     <DailyForecast />
