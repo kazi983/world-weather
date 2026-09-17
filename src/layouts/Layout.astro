@@ -59,6 +59,9 @@ const title = 'KMS Weather';
       import { selectedPlace } from '../stores/weatherStore';
       import { moveGlobe } from '../scripts/globe';
 
+      // Hide dropdown on initial load
+      $('#dropdown').addClass('hidden');
+
       // API
       const PLACES_URL = 'https://api.placekit.co/search';
       const PLACEKIT_API_KEY =
@@ -140,9 +143,6 @@ const title = 'KMS Weather';
         // console.log(selectedPlace.get());
 
         $('#search').val(``); // show selected
-        $('#search').val(
-          `${place.city}, ${place.administrative}, ${place.country}`,
-        ); // show selected
 
         // place on search bar.
         $('#dropdown').addClass('hidden'); // close dropdown when selected

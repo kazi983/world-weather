@@ -82,13 +82,30 @@ header {
     backdrop-filter: blur($panel-blur);
     -webkit-backdrop-filter: blur($panel-blur);
 
+    transition:
+      transform 0.4s ease,
+      box-shadow 0.4s ease,
+      border-color 0.4s ease,
+      background-color 0.4s ease;
+
     &::placeholder {
       color: $text-secondary;
+      transition: opacity 0.3s ease;
     }
 
     &:focus {
       outline: none;
-      box-shadow: 0 0 0 2px $accent;
+      transform: translateY(-4px) scale(1.02);
+      background: rgb(10 20 35 / 80%);
+
+      box-shadow:
+        0 0 0 1px rgba(109, 120, 130, 0.5),
+        0 0 20px rgb(80 180 255 / 30%),
+        0 0 50px rgb(80 180 255 / 15%);
+    }
+
+    &:focus::placeholder {
+      opacity: 0.4;
     }
   }
 
