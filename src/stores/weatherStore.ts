@@ -1,13 +1,12 @@
 import { atom } from 'nanostores';
 
-type City = {
+export type City = {
   city: string;
   administrative: string;
   country: string;
   countrycode: string;
   lat: number;
   lng: number;
-  coordinates: string;
 };
 
 export type FavoriteCity = City & {
