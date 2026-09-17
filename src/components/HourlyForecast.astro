@@ -75,6 +75,14 @@
     border: 1px solid $chip-border;
     border-radius: 1rem;
     color: $text-primary;
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .hourCard:hover {
+    transform: translateY(-3px);
+    background: $chip-bg-hover;
   }
 
   .hourCardTime {
@@ -117,6 +125,8 @@
 </style>
 
 <script>
+  type TemperatureUnit = 'celsius' | 'fahrenheit';
+
   type HourlyWeather = {
     hourly: {
       time: string[];
@@ -132,6 +142,11 @@
 
   let weatherData: HourlyWeather | null = null;
   let selectedDayIndex = 0;
+  let currentUnit: TemperatureUnit = 'celsius';
+
+  function celsiusToFahrenheit(celsius: number) {
+    return (celsius * 9) / 5 + 32;
+  }
 
   function getWeatherDescription(code: number) {
     if (code === 0) {
@@ -202,7 +217,13 @@
         continue;
       }
 
-      const temperature = weatherData.hourly.temperature_2m[index];
+      let temperature = weatherData.hourly.temperature_2m[index];
+
+      if (currentUnit === 'fahrenheit') {
+        temperature = celsiusToFahrenheit(temperature);
+      }
+
+      const unit = currentUnit === 'fahrenheit' ? '°F' : '°C';
 
       const weatherCode = weatherData.hourly.weather_code[index];
 
@@ -227,11 +248,15 @@
       iconElement.textContent = description.icon;
 
       const temperatureElement = document.createElement('span');
+
       temperatureElement.className = 'hourCardTemperature';
-      temperatureElement.textContent = `${Math.round(temperature)}°C`;
+
+      temperatureElement.textContent = `${Math.round(temperature)}${unit}`;
 
       const conditionElement = document.createElement('span');
+
       conditionElement.className = 'hourCardCondition';
+
       conditionElement.textContent = description.condition;
 
       hourCard.append(
@@ -275,6 +300,16 @@
     if (selectedDay) {
       selectedDay.textContent = customEvent.detail.dayName;
     }
+
+    displayHourlyForecast(selectedDayIndex);
+  });
+
+  window.addEventListener('temperatureUnitChanged', (event) => {
+    const customEvent = event as CustomEvent<{
+      unit: TemperatureUnit;
+    }>;
+
+    currentUnit = customEvent.detail.unit;
 
     displayHourlyForecast(selectedDayIndex);
   });

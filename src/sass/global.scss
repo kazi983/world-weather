@@ -7,18 +7,43 @@ body {
   height: 100%;
   background: $bg-space;
   color: $text-primary;
+
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-// Glove
+/* Headings */
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Buttons and inputs use the same font */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* Globe */
 #globe {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   z-index: 0;
-  // opacity: 0.8;
 }
 
+/* Content above globe */
 .content {
   position: relative;
   z-index: 1;
@@ -95,8 +120,7 @@ header {
     }
   }
 
-
   @media (max-width: 375px) {
-    // Mobile styles
+    /* Mobile styles */
   }
 }
