@@ -47,9 +47,11 @@ textarea {
 .content {
   position: relative;
   z-index: 1;
+  padding-block: 2rem;
 }
 
-/* Keeps the header/content readable above the globe */
+// Keeps the header/content readable above a full-bleed globe canvas,
+// whether the globe is fixed-positioned or simply first in the DOM.
 body > header,
 body > main {
   position: relative;
@@ -60,7 +62,12 @@ body > header h1 {
   text-shadow: 0 2px 12px rgb(0 0 0 / 55%);
 }
 
-/* Search */
+header {
+  width: min(900px, calc(100% - 2rem));
+  margin: auto;
+}
+
+// search
 .searchContainer {
   position: relative;
   width: 100%;

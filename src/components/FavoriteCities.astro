@@ -5,7 +5,7 @@
       type="button"
       aria-expanded="false"
       aria-controls="favoriteList"
-      class="flex justify-between p-3 border border-white/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-left text-white bg-white/10 backdrop-blur-md cursor-pointer"
+      class="flex justify-between bg-white/10 backdrop-blur-md p-3 border border-white/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-white text-left cursor-pointer"
     >
       <span>Favorites</span>
       <span>▼</span>
@@ -14,7 +14,7 @@
     <ul
       id="favoriteList"
       aria-expanded="false"
-      class="hidden top-full right-0 left-0 z-1 absolute bg-slate-900/70 backdrop-blur-md shadow-lg mt-1 py-1 border border-white/15 rounded-2xl max-h-56 overflow-auto text-sm text-white"
+      class="hidden top-full right-0 left-0 z-1 absolute bg-slate-900/70 shadow-lg backdrop-blur-md mt-1 py-1 border border-white/15 rounded-2xl max-h-56 overflow-auto text-white text-sm"
     ></ul>
   </div>
 </div>
@@ -86,8 +86,6 @@
 
         favoriteCityItem.classList.add();
         favoriteCityButton.dataset.id = favorite.id;
-        favoriteCityButton.dataset.lat = String(favorite.lat);
-        favoriteCityButton.dataset.lng = String(favorite.lng);
         favoriteCityButton.type = 'button';
         favoriteCityButton.classList.add(
           'cursor-pointer',
@@ -166,12 +164,12 @@
     const cityButton = target.closest('button');
     if (!cityButton) return;
 
-    const lat = cityButton.dataset.lat;
-    const lng = cityButton.dataset.lng;
+    const id = cityButton.dataset.id;
+    const favorite = $favoriteCities.get().find((city) => city.id === id);
 
-    // TODO Pass lat and lng to WeatherAPI
-    // console.log('lat :>> ', lat);
-    // console.log('lng :>> ', lng);
+    if (favorite) {
+      selectedPlace.set(favorite);
+    }
 
     closeFavoriteList();
   });
