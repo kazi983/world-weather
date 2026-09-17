@@ -52,7 +52,7 @@ import HourlyForecast from '../components/HourlyForecast.astro';
 
   function getLocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success);
+      navigator.geolocation.getCurrentPosition(success, fallback);
     }
   }
 
@@ -67,6 +67,11 @@ import HourlyForecast from '../components/HourlyForecast.astro';
     );
   }
 
+  // Load Vancouver as the default weather
+  function fallback() {
+    loadWeather(currentCoords.latitude, currentCoords.longitude, 'Vancouver');
+  }
+
   selectedPlace.subscribe((place) => {
     if (!place) {
       return;
@@ -74,9 +79,6 @@ import HourlyForecast from '../components/HourlyForecast.astro';
 
     loadWeather(place.lat, place.lng, place.city);
   });
-
-  // Load Vancouver as the default weather
-  loadWeather(currentCoords.latitude, currentCoords.longitude, 'Vancouver');
 
   // Try to use the user's current location
   getLocation();
