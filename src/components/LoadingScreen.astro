@@ -1,0 +1,104 @@
+<div id="loadingScreen">
+  <div class="loadingContent">
+    <div class="loadingGlobe">🌍</div>
+
+    <h1>SMK WORLD WEATHER</h1>
+
+    <p id="loadingText">Loading...</p>
+
+    <div class="loadingBar">
+      <div class="loadingProgress"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #loadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #050816;
+    color: white;
+
+    transition:
+      opacity 0.6s ease,
+      visibility 0.6s ease;
+  }
+
+  #loadingScreen.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .loadingContent {
+    text-align: center;
+  }
+
+  .loadingGlobe {
+    font-size: 80px;
+    animation: rotate 3s linear infinite;
+  }
+
+  h1 {
+    margin-top: 20px;
+    font-size: 24px;
+    letter-spacing: 4px;
+  }
+
+  p {
+    margin-top: 12px;
+    opacity: 0.6;
+  }
+
+  .loadingBar {
+    width: 180px;
+    height: 3px;
+    margin: 20px auto 0;
+
+    background: rgb(255 255 255 / 15%);
+    overflow: hidden;
+  }
+
+  .loadingProgress {
+    width: 40%;
+    height: 100%;
+    background: white;
+
+    animation: loading 1.5s ease-in-out infinite;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes loading {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(450%);
+    }
+  }
+</style>
+
+<script>
+  window.addEventListener('load', () => {
+    const loadingScreen = document.querySelector('#loadingScreen');
+
+    setTimeout(() => {
+      loadingScreen?.classList.add('hidden');
+    }, 800);
+  });
+</script>
