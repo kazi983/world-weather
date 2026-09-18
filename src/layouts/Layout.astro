@@ -18,10 +18,6 @@ const title = 'SMK World Weather';
 
     <script
       is:inline
-      src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
-    ></script>
-    <script
-      is:inline
       src="https://code.jquery.com/jquery-4.0.0.js"
       integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
       crossorigin="anonymous"
@@ -32,15 +28,13 @@ const title = 'SMK World Weather';
     <div id="globe"></div>
 
     <div class="content">
-      <header class="p-3">
-        <div class="flex sm:flex-row flex-col justify-between gap-8 mb-6 align-center">
-          <h1 class="font-title font-bold text-3xl text-center">
-            <a class="cursor-pointer" href="/">
-              {title}
-            </a>
+      <header>
+        <div class="headerRow">
+          <h1 class="font-title siteTitle">
+            <a href="/">{title}</a>
           </h1>
 
-          <div class="w-full sm:w-auto">
+          <div class="favoritesWrapper">
             <FavoriteCities />
           </div>
         </div>
@@ -60,6 +54,37 @@ const title = 'SMK World Weather';
 
       <slot />
     </div>
+
+    <style lang="scss">
+      .headerRow {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .siteTitle {
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .favoritesWrapper {
+        width: 100%;
+      }
+
+      @media (min-width: 640px) {
+        .headerRow {
+          flex-direction: row;
+        }
+
+        .favoritesWrapper {
+          width: auto;
+        }
+      }
+    </style>
+
     <script>
       /// <reference types="jquery" />
       import { selectedPlace } from '../stores/weatherStore';

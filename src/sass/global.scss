@@ -3,6 +3,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 
 /* ============================================
+   Reset (previously provided by Tailwind Preflight)
+============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================
    Mixin
 ============================================ */
 
@@ -131,13 +161,18 @@ textarea {
 header {
   width: min(900px, calc(100% - 2rem));
   margin: auto;
+  padding: 0.75rem;
 }
 
 // favorite
 .favoriteListToggleButton {
   @include input-style();
   @include input-transition();
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   color: $text-secondary;
+  text-align: left;
 
   &:focus {
     @include input-focus();
@@ -145,6 +180,11 @@ header {
 }
 .favoriteList {
   @include dropdown-style();
+}
+
+#dropdown.hidden,
+#favoriteList.hidden {
+  display: none;
 }
 
 // search
