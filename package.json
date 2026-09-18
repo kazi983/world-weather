@@ -22,7 +22,6 @@
     "esbuild": true
   },
   "devDependencies": {
-    "@types/jquery": "^4.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
     "prettier": "^3.9.6",

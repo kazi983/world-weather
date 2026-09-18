@@ -15,13 +15,6 @@ const title = 'SMK World Weather';
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-
-    <script
-      is:inline
-      src="https://code.jquery.com/jquery-4.0.0.js"
-      integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
-      crossorigin="anonymous"
-    ></script>
   </head>
   <body>
     <LoadingScreen />
@@ -86,15 +79,23 @@ const title = 'SMK World Weather';
     </style>
 
     <script>
-      /// <reference types="jquery" />
       import { selectedPlace } from '../stores/weatherStore';
       import { moveGlobe } from '../scripts/globe';
 
+      // ==========================================================================
+      // DOM
+      // ==========================================================================
+
+      const searchInput = document.querySelector<HTMLInputElement>('#search');
+      const dropdown = document.querySelector<HTMLUListElement>('#dropdown');
+
+      // ==========================================================================
       // API
+      // ==========================================================================
+
       const PLACES_URL = 'https://api.placekit.co/search';
       const PLACEKIT_API_KEY = import.meta.env.PUBLIC_PLACEKIT_API_KEY;
 
-      // Search Place============================================
       let searchResults: any[] = [];
 
       async function searchPlaces(query: string) {
@@ -117,61 +118,81 @@ const title = 'SMK World Weather';
         }
 
         const data = await response.json();
-        searchResults = data.results; //"Take the PlaceKit results and save them in my results variable."
+        searchResults = data.results;
         return searchResults;
       }
 
-      $('#search').on('input', async function () {
-        const query = ($(this).val() as string).trim(); //Get what the user typed and remove unnecessary spaces.
+      // ==========================================================================
+      // Functions
+      // ==========================================================================
+
+      function renderDropdown(items: any[]): void {
+        if (!dropdown) return;
+
+        dropdown.innerHTML = '';
+
+        if (items.length === 0) {
+          const emptyItem = document.createElement('li');
+          emptyItem.textContent = 'No Result';
+          dropdown.append(emptyItem);
+        }
+
+        items.forEach((item, index) => {
+          if (item.city && item.administrative && item.country) {
+            const li = document.createElement('li');
+            li.dataset.index = String(index);
+            li.textContent = `${item.city}, ${item.administrative}, ${item.country}`;
+            dropdown.append(li);
+          }
+        });
+
+        dropdown.classList.remove('hidden');
+      }
+
+      // ==========================================================================
+      // Event listeners
+      // ==========================================================================
+
+      searchInput?.addEventListener('input', async () => {
+        const query = searchInput.value.trim();
 
         if (query.length < 2) {
-          $('#dropdown').addClass('hidden');
+          dropdown?.classList.add('hidden');
           return;
         }
+
         const places = await searchPlaces(query);
         renderDropdown(places);
       });
 
-      // SHOW Place ===============================================
+      // Hide dropdown when clicking outside the search area
+      document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
 
-      function renderDropdown(items: any[]) {
-        const $dropdown = $('#dropdown');
-        $dropdown.empty(); //This removes everything currently inside the <ul>.
-
-        if (items.length == 0) {
-          $dropdown.append('<li>No Result</li>');
-        }
-
-        items.forEach(function (item, index) {
-          // show only have info city, administrative or country
-          if (item.city && item.administrative && item.country) {
-            const li = `<li data-index="${index}">${item.city}, ${item.administrative}, ${item.country}</li>`;
-            $dropdown.append(li);
-          }
-        });
-        $dropdown.removeClass('hidden');
-      }
-
-      // ux  hide dropdown if click other place when dropdown is open
-      $(document).on('click', function (event) {
         if (
-          !$(event.target).closest('#search').length &&
-          !$(event.target).closest('#dropdown').length
+          !event.target.closest('#search') &&
+          !event.target.closest('#dropdown')
         ) {
-          $('#dropdown').addClass('hidden');
+          dropdown?.classList.add('hidden');
         }
       });
 
-      // Select Place============================================
-      $('#dropdown').on('click', 'li[data-index]', function () {
-        const index = $(this).data('index');
+      dropdown?.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const item = target.closest<HTMLLIElement>('li[data-index]');
+        if (!item) return;
+
+        const index = Number(item.dataset.index);
         const place = searchResults[index];
         selectedPlace.set(place);
 
-        $('#search').val(``);
+        if (searchInput) {
+          searchInput.value = '';
+        }
 
-        // place on search bar.
-        $('#dropdown').addClass('hidden'); // close dropdown when selected
+        dropdown.classList.add('hidden');
         moveGlobe(place);
       });
     </script>
