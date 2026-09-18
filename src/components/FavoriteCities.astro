@@ -5,7 +5,7 @@
       type="button"
       aria-expanded="false"
       aria-controls="favoriteList"
-      class="flex justify-between bg-white/10 backdrop-blur-md p-3 border border-white/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-white text-left cursor-pointer"
+      class="flex justify-between bg-white/10 backdrop-blur-md p-3 border border-white/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-white text-left cursor-pointer favoriteListToggleButton"
     >
       <span>Favorites</span>
       <span>▼</span>
@@ -14,7 +14,7 @@
     <ul
       id="favoriteList"
       aria-expanded="false"
-      class="hidden top-full right-0 left-0 z-1 absolute bg-slate-900/70 shadow-lg backdrop-blur-md mt-1 py-1 border border-white/15 rounded-2xl max-h-56 overflow-auto text-white text-sm"
+      class="hidden favoriteList"
     ></ul>
   </div>
 </div>
@@ -88,15 +88,7 @@
         favoriteCityItem.classList.add();
         favoriteCityButton.dataset.id = favorite.id;
         favoriteCityButton.type = 'button';
-        favoriteCityButton.classList.add(
-          'cursor-pointer',
-          'p-2',
-          'hover:bg-white/10',
-          'w-full',
-          'text-left',
-          'transition',
-          'duration-200',
-        );
+        favoriteCityButton.classList.add('cursor-pointer');
 
         favoriteCityButton.textContent = [
           favorite.city,
