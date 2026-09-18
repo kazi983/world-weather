@@ -148,23 +148,15 @@
 </style>
 
 <script>
-  type TemperatureUnit = 'celsius' | 'fahrenheit';
+  import {
+    $weatherData,
+    $temperatureUnit,
+    $selectedDayIndex,
+    type TemperatureUnit,
+    type WeatherApiResponse,
+  } from '../stores/weatherStore';
 
-  type DailyWeather = {
-    daily: {
-      time: string[];
-      weather_code: number[];
-      temperature_2m_max: number[];
-      temperature_2m_min: number[];
-    };
-  };
-
-  type WeatherEvent = CustomEvent<{
-    weather: DailyWeather;
-    city: string;
-  }>;
-
-  let dailyWeatherData: DailyWeather['daily'] | null = null;
+  let dailyWeatherData: WeatherApiResponse['daily'] | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
 
   function celsiusToFahrenheit(celsius: number) {
@@ -219,7 +211,9 @@
     document.querySelectorAll<HTMLButtonElement>('.forecastCard');
 
   function displayDailyForecast() {
-    if (!dailyWeatherData) {
+    const daily = dailyWeatherData;
+
+    if (!daily) {
       return;
     }
 
@@ -236,7 +230,7 @@
         '.forecastCardCondition',
       );
 
-      const date = new Date(`${dailyWeatherData.time[index]}T12:00:00`);
+      const date = new Date(`${daily.time[index]}T12:00:00`);
 
       const dayName =
         index === 0
@@ -246,7 +240,7 @@
             });
 
       const weatherDescription = getWeatherDescription(
-        dailyWeatherData.weather_code[index],
+        daily.weather_code[index],
       );
 
       if (dayElement) {
@@ -258,8 +252,8 @@
       }
 
       if (temperatureElement) {
-        let max = dailyWeatherData.temperature_2m_max[index];
-        let min = dailyWeatherData.temperature_2m_min[index];
+        let max = daily.temperature_2m_max[index];
+        let min = daily.temperature_2m_min[index];
 
         if (currentUnit === 'fahrenheit') {
           max = celsiusToFahrenheit(max);
@@ -277,45 +271,40 @@
     });
   }
 
-  window.addEventListener('weatherDataUpdated', (event) => {
-    const customEvent = event as WeatherEvent;
+  function updateActiveCard(dayIndex: number): void {
+    forecastCards.forEach((card) => {
+      card.classList.toggle(
+        'active',
+        Number(card.dataset.dayIndex) === dayIndex,
+      );
+    });
+  }
 
-    dailyWeatherData = customEvent.detail.weather.daily;
+  $weatherData.subscribe((info) => {
+    if (!info) {
+      return;
+    }
+
+    dailyWeatherData = info.weather.daily;
 
     displayDailyForecast();
   });
 
-  window.addEventListener('temperatureUnitChanged', (event) => {
-    const customEvent = event as CustomEvent<{
-      unit: TemperatureUnit;
-    }>;
-
-    currentUnit = customEvent.detail.unit;
+  $temperatureUnit.subscribe((unit) => {
+    currentUnit = unit;
 
     displayDailyForecast();
+  });
+
+  $selectedDayIndex.subscribe((dayIndex) => {
+    updateActiveCard(dayIndex);
   });
 
   forecastCards.forEach((card) => {
     card.addEventListener('click', () => {
-      forecastCards.forEach((item) => {
-        item.classList.remove('active');
-      });
-
-      card.classList.add('active');
-
       const dayIndex = Number(card.dataset.dayIndex);
 
-      const dayName =
-        card.querySelector('.forecastCardDay')?.textContent ?? 'Today';
-
-      window.dispatchEvent(
-        new CustomEvent('forecastDaySelected', {
-          detail: {
-            dayIndex,
-            dayName,
-          },
-        }),
-      );
+      $selectedDayIndex.set(dayIndex);
     });
   });
 </script>

@@ -42,13 +42,13 @@
 </style>
 
 <script>
+  import { $selectedPlace } from '../stores/placeStore';
   import {
-    selectedPlace as $selectedPlace,
     $favoriteCities,
     isFavorited,
     toggleFavorite,
     type FavoriteCity,
-  } from '../stores/weatherStore';
+  } from '../stores/favoritesStore';
   import { moveGlobe } from '../scripts/globe';
 
   // ==========================================================================

@@ -191,23 +191,12 @@
 
 <script>
   import { countryCodeEmoji } from 'country-code-emoji';
-
-  type TemperatureUnit = 'celsius' | 'fahrenheit';
-
-  type WeatherData = {
-    current: {
-      temperature_2m: number;
-      relative_humidity_2m: number;
-      weather_code: number;
-      wind_speed_10m: number;
-    };
-  };
-
-  type WeatherEvent = CustomEvent<{
-    weather: WeatherData;
-    city: string;
-    countryCode: string | null;
-  }>;
+  import {
+    $weatherData,
+    $temperatureUnit,
+    type TemperatureUnit,
+    type WeatherInfo,
+  } from '../stores/weatherStore';
 
   let currentTemperatureCelsius: number | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
@@ -291,12 +280,13 @@
     return { condition: 'Unknown', icon: '🌡️' };
   }
 
-  window.addEventListener('weatherDataUpdated', (event) => {
-    const customEvent = event as WeatherEvent;
-    const { weather, city, countryCode } = customEvent.detail;
-    const countryFlag = countryCode ? countryCodeEmoji(countryCode) : null;
+  function updateCurrentWeather(info: WeatherInfo | null) {
+    if (!info) {
+      return;
+    }
 
-    currentTemperatureCelsius = weather.current.temperature_2m;
+    const { weather, city, countryCode } = info;
+    const countryFlag = countryCode ? countryCodeEmoji(countryCode) : null;
 
     currentTemperatureCelsius = weather.current.temperature_2m;
 
@@ -345,14 +335,12 @@
         day: 'numeric',
       });
     }
-  });
+  }
 
-  window.addEventListener('temperatureUnitChanged', (event) => {
-    const customEvent = event as CustomEvent<{
-      unit: TemperatureUnit;
-    }>;
+  $weatherData.subscribe(updateCurrentWeather);
 
-    currentUnit = customEvent.detail.unit;
+  $temperatureUnit.subscribe((unit) => {
+    currentUnit = unit;
 
     displayTemperature();
   });

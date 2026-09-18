@@ -19,7 +19,8 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
 </Layout>
 
 <script>
-  import { type City, selectedPlace } from '../stores/weatherStore';
+  import { type City, $selectedPlace } from '../stores/placeStore';
+  import { $weatherData, $selectedDayIndex } from '../stores/weatherStore';
   import { getWeather } from '../scripts/weatherApi';
   import { getGeolocation } from '../scripts/geolocationApi';
 
@@ -41,16 +42,15 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
     countryCode?: string,
   ) {
     try {
-      const weatherData = await getWeather(latitude, longitude);
-      window.dispatchEvent(
-        new CustomEvent('weatherDataUpdated', {
-          detail: {
-            weather: weatherData,
-            city: city ?? 'Current Location',
-            countryCode: countryCode ?? '',
-          },
-        }),
-      );
+      const weather = await getWeather(latitude, longitude);
+
+      $weatherData.set({
+        weather,
+        city: city ?? 'Current Location',
+        countryCode: countryCode ?? '',
+      });
+
+      $selectedDayIndex.set(0);
     } catch (error) {
       console.error('Failed to load weather:', error);
     }
@@ -83,7 +83,7 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
         lng: geolocation.longitude,
       };
 
-      selectedPlace.set(city);
+      $selectedPlace.set(city);
     }
 
     loadWeather(
@@ -104,7 +104,7 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
     );
   }
 
-  selectedPlace.subscribe((place) => {
+  $selectedPlace.subscribe((place) => {
     if (!place) {
       return;
     }

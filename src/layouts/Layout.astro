@@ -79,7 +79,7 @@ const title = 'SMK World Weather';
     </style>
 
     <script>
-      import { selectedPlace } from '../stores/weatherStore';
+      import { $selectedPlace } from '../stores/placeStore';
       import { moveGlobe } from '../scripts/globe';
 
       // ==========================================================================
@@ -186,7 +186,7 @@ const title = 'SMK World Weather';
 
         const index = Number(item.dataset.index);
         const place = searchResults[index];
-        selectedPlace.set(place);
+        $selectedPlace.set(place);
 
         if (searchInput) {
           searchInput.value = '';
