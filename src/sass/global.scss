@@ -57,18 +57,6 @@ textarea {
   padding-block: 2rem;
 }
 
-// Keeps the header/content readable above a full-bleed globe canvas,
-// whether the globe is fixed-positioned or simply first in the DOM.
-body > header,
-body > main {
-  position: relative;
-  z-index: 1;
-}
-
-body > header h1 {
-  text-shadow: 0 2px 12px rgb(0 0 0 / 55%);
-}
-
 header {
   width: min(900px, calc(100% - 2rem));
   margin: auto;
@@ -143,9 +131,5 @@ header {
         background-color: $chip-bg-hover;
       }
     }
-  }
-
-  @media (max-width: 375px) {
-    /* Mobile styles */
   }
 }
