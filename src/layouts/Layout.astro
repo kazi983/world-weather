@@ -1,6 +1,7 @@
 ---
 import '../sass/global.scss';
 import FavoriteCities from '../components/FavoriteCities.astro';
+import LoadingScreen from '../components/LoadingScreen.astro';
 
 const title = 'SMK World Weather';
 ---
@@ -27,6 +28,7 @@ const title = 'SMK World Weather';
     ></script>
   </head>
   <body>
+    <LoadingScreen />
     <div id="globe"></div>
 
     <div class="content">
