@@ -47,12 +47,12 @@ const title = 'SMK World Weather';
           <input
             id="search"
             type="text"
-            placeholder="Type a city or address"
+            placeholder="Search a city..."
             autocomplete="off"
           />
 
           <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
-          <ul id="dropdown"></ul>
+          <ul id="dropdown" class="hidden"></ul>
         </div>
       </header>
 
@@ -141,11 +141,8 @@ const title = 'SMK World Weather';
         const index = $(this).data('index');
         const place = searchResults[index];
         selectedPlace.set(place);
-        // console.log(selectedPlace.get());
 
-        $('#search').val(
-          `${place.city}, ${place.administrative}, ${place.country}`,
-        ); // show selected
+        $('#search').val(``);
 
         // place on search bar.
         $('#dropdown').addClass('hidden'); // close dropdown when selected
