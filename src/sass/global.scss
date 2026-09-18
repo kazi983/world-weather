@@ -2,6 +2,73 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 
+/* ============================================
+   Mixin
+============================================ */
+
+@mixin input-style {
+  width: 100%;
+  padding: 12px;
+  background: $chip-bg;
+  border: 1px solid $panel-border;
+  border-radius: 8px;
+  margin-top: 10px;
+  color: $text-primary;
+  backdrop-filter: blur($panel-blur);
+  -webkit-backdrop-filter: blur($panel-blur);
+}
+
+@mixin input-focus {
+  outline: none;
+  transform: translateY(-4px) scale(1.02);
+  background: rgb(10 20 35 / 80%);
+
+  box-shadow:
+    0 0 0 1px rgba(109, 120, 130, 0.5),
+    0 0 20px rgb(80 180 255 / 30%),
+    0 0 50px rgb(80 180 255 / 15%);
+}
+
+@mixin input-transition {
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease,
+    background-color 0.4s ease;
+}
+
+@mixin dropdown-style {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+
+  margin-top: 4px;
+
+  background: $panel-bg-strong;
+  border: 1px solid $panel-border;
+  border-radius: 8px;
+  color: $text-primary;
+  backdrop-filter: blur($panel-blur);
+  -webkit-backdrop-filter: blur($panel-blur);
+
+  box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+  overflow: hidden;
+
+  li {
+    padding: 8px;
+
+    &:hover {
+      background-color: $chip-bg-hover;
+    }
+  }
+}
+
+/* ============================================
+   Global styles
+============================================ */
+
 .font-title {
   font-size: 2rem;
   font-family: 'Space Grotesk', sans-serif;
@@ -41,6 +108,10 @@ textarea {
   font: inherit;
 }
 
+/* ============================================
+   Individual styles
+============================================ */
+
 /* Globe */
 #globe {
   position: fixed;
@@ -62,27 +133,28 @@ header {
   margin: auto;
 }
 
+// favorite
+.favoriteListToggleButton {
+  @include input-style();
+  @include input-transition();
+  color: $text-secondary;
+
+  &:focus {
+    @include input-focus();
+  }
+}
+.favoriteList {
+  @include dropdown-style();
+}
+
 // search
 .searchContainer {
   position: relative;
   width: 100%;
 
   input {
-    width: 100%;
-    padding: 12px;
-    background: $chip-bg;
-    border: 1px solid $panel-border;
-    border-radius: 8px;
-    margin-top: 10px;
-    color: $text-primary;
-    backdrop-filter: blur($panel-blur);
-    -webkit-backdrop-filter: blur($panel-blur);
-
-    transition:
-      transform 0.4s ease,
-      box-shadow 0.4s ease,
-      border-color 0.4s ease,
-      background-color 0.4s ease;
+    @include input-style();
+    @include input-transition();
 
     &::placeholder {
       color: $text-secondary;
@@ -90,14 +162,7 @@ header {
     }
 
     &:focus {
-      outline: none;
-      transform: translateY(-4px) scale(1.02);
-      background: rgb(10 20 35 / 80%);
-
-      box-shadow:
-        0 0 0 1px rgba(109, 120, 130, 0.5),
-        0 0 20px rgb(80 180 255 / 30%),
-        0 0 50px rgb(80 180 255 / 15%);
+      @include input-focus();
     }
 
     &:focus::placeholder {
@@ -106,30 +171,6 @@ header {
   }
 
   #dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 10;
-
-    margin-top: 4px;
-
-    background: $panel-bg-strong;
-    border: 1px solid $panel-border;
-    border-radius: 8px;
-    color: $text-primary;
-    backdrop-filter: blur($panel-blur);
-    -webkit-backdrop-filter: blur($panel-blur);
-
-    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
-    overflow: hidden;
-
-    li {
-      padding: 8px;
-
-      &:hover {
-        background-color: $chip-bg-hover;
-      }
-    }
+    @include dropdown-style();
   }
 }
