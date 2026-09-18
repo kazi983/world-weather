@@ -24,16 +24,6 @@ export function moveGlobe(place: any): void {
     1000,
   );
 
-  // Flight route
-  // globe.arcsData([
-  //   {
-  //     startLat: 49.2827,
-  //     startLng: -123.1207,
-  //     endLat: place.lat,
-  //     endLng: place.lng,
-  //   },
-  // ]);
-
   // Add marker
   globe
     .pointsData([
