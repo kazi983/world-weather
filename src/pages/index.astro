@@ -21,6 +21,7 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
 <script>
   import { type City, $selectedPlace } from '../stores/placeStore';
   import { $weatherData, $selectedDayIndex } from '../stores/weatherStore';
+  import { $appError } from '../stores/errorStore';
   import { getWeather } from '../scripts/weatherApi';
   import { getGeolocation } from '../scripts/geolocationApi';
 
@@ -51,8 +52,10 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
       });
 
       $selectedDayIndex.set(0);
+      $appError.set(null);
     } catch (error) {
       console.error('Failed to load weather:', error);
+      $appError.set('Please check your connection and reload.');
     }
   }
 
@@ -66,24 +69,28 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
     currentCoords.latitude = position.coords.latitude;
     currentCoords.longitude = position.coords.longitude;
 
-    const geolocation = await getGeolocation(
-      currentCoords.latitude,
-      currentCoords.longitude,
-    );
-
     let city: City | undefined;
 
-    if (geolocation) {
-      city = {
-        city: geolocation.city,
-        administrative: geolocation.principalSubdivision,
-        country: geolocation.countryName,
-        countrycode: geolocation.countryCode,
-        lat: geolocation.latitude,
-        lng: geolocation.longitude,
-      };
+    try {
+      const geolocation = await getGeolocation(
+        currentCoords.latitude,
+        currentCoords.longitude,
+      );
 
-      $selectedPlace.set(city);
+      if (geolocation) {
+        city = {
+          city: geolocation.city,
+          administrative: geolocation.principalSubdivision,
+          country: geolocation.countryName,
+          countrycode: geolocation.countryCode,
+          lat: geolocation.latitude,
+          lng: geolocation.longitude,
+        };
+
+        $selectedPlace.set(city);
+      }
+    } catch (error) {
+      console.error('Failed to reverse geocode location:', error);
     }
 
     loadWeather(

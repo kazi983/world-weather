@@ -21,6 +21,10 @@ const title = 'SMK World Weather';
     <div id="globe"></div>
 
     <div class="content">
+      <div id="errorBanner" class="hidden errorBanner" role="alert">
+        <span id="errorBannerMessage"></span>
+      </div>
+
       <header>
         <div class="headerRow">
           <h1 class="font-title siteTitle">
@@ -49,6 +53,22 @@ const title = 'SMK World Weather';
     </div>
 
     <style lang="scss">
+      .errorBanner {
+        width: min(900px, calc(100% - 2rem));
+        margin: 0 auto 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        background: rgba(248, 113, 113, 0.15);
+        border: 1px solid rgba(248, 113, 113, 0.4);
+        color: #fecaca;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .errorBanner.hidden {
+        display: none;
+      }
+
       .headerRow {
         display: flex;
         flex-direction: column;
@@ -80,6 +100,7 @@ const title = 'SMK World Weather';
 
     <script>
       import { $selectedPlace, type City } from '../stores/placeStore';
+      import { $appError } from '../stores/errorStore';
       import { moveGlobe } from '../scripts/globe';
       import { debounce } from '../lib/common';
 
@@ -89,6 +110,10 @@ const title = 'SMK World Weather';
 
       const searchInput = document.querySelector<HTMLInputElement>('#search');
       const dropdown = document.querySelector<HTMLUListElement>('#dropdown');
+      const errorBanner = document.querySelector<HTMLElement>('#errorBanner');
+      const errorBannerMessage = document.querySelector<HTMLElement>(
+        '#errorBannerMessage',
+      );
 
       // ==========================================================================
       // API
@@ -156,8 +181,17 @@ const title = 'SMK World Weather';
           return;
         }
 
-        const places = await searchPlaces(query);
-        renderDropdown(places);
+        try {
+          const places = await searchPlaces(query);
+
+          renderDropdown(places);
+          $appError.set(null);
+        } catch (error) {
+          console.error('Failed to search places:', error);
+          $appError.set(
+            'Could not search cities. Please check your connection.',
+          );
+        }
       }
 
       const debouncedFetchCities = debounce(fetchCities, 500);
@@ -200,6 +234,21 @@ const title = 'SMK World Weather';
 
         dropdown.classList.add('hidden');
         moveGlobe(place);
+      });
+
+      // ==========================================================================
+      // Store subscriptions
+      // ==========================================================================
+
+      $appError.subscribe((message) => {
+        if (!errorBanner || !errorBannerMessage) return;
+
+        if (message) {
+          errorBannerMessage.textContent = message;
+          errorBanner.classList.remove('hidden');
+        } else {
+          errorBanner.classList.add('hidden');
+        }
       });
     </script>
   </body>
