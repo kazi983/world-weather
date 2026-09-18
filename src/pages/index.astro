@@ -96,6 +96,15 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
 
   // Load Vancouver as the default weather
   function fallback() {
+    $selectedPlace.set({
+      city: 'Vancouver',
+      administrative: 'British Columbia',
+      country: 'Canada',
+      countrycode: 'CA',
+      lat: currentCoords.latitude,
+      lng: currentCoords.longitude,
+    });
+
     loadWeather(
       currentCoords.latitude,
       currentCoords.longitude,
