@@ -21,7 +21,7 @@
 
 <script>
   import {
-    selectedPlace,
+    selectedPlace as $selectedPlace,
     $favoriteCities,
     isFavorited,
     toggleFavorite,
@@ -52,7 +52,7 @@
   function updateFavoriteButton(): void {
     if (!favoriteButton) throw new Error(`Failed to get DOM: #favoriteButton`);
 
-    const place = selectedPlace.get();
+    const place = $selectedPlace.get();
 
     favoriteButton.setAttribute(
       'aria-pressed',
@@ -143,7 +143,7 @@
   });
 
   favoriteButton?.addEventListener('click', () => {
-    const place = selectedPlace.get();
+    const place = $selectedPlace.get();
 
     if (!place) return;
 
@@ -161,7 +161,7 @@
     const favorite = $favoriteCities.get().find((city) => city.id === id);
 
     if (favorite) {
-      selectedPlace.set(favorite);
+      $selectedPlace.set(favorite);
       moveGlobe(favorite);
     }
 
@@ -185,7 +185,7 @@
     updateFavoriteButton();
   });
 
-  selectedPlace.subscribe(() => {
+  $selectedPlace.subscribe(() => {
     updateFavoriteButton();
   });
 </script>
