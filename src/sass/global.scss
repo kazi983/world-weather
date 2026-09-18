@@ -174,3 +174,45 @@ header {
     @include dropdown-style();
   }
 }
+/* ============================================
+   Mobile UI / UX
+============================================ */
+
+@media (max-width: 600px) {
+  .content {
+    padding-block: 1rem;
+  }
+
+  header {
+    width: calc(100% - 1.5rem);
+  }
+
+  .font-title {
+    font-size: 1.6rem;
+    line-height: 1.2;
+  }
+
+  .searchContainer input,
+  .favoriteListToggleButton {
+    min-height: 44px;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .searchContainer input:focus,
+  .favoriteListToggleButton:focus {
+    transform: none;
+  }
+
+  .favoriteList,
+  .searchContainer #dropdown {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .favoriteList li,
+  .searchContainer #dropdown li {
+    padding: 0.75rem;
+    min-height: 44px;
+  }
+}

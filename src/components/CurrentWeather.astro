@@ -48,7 +48,7 @@
     </p>
 
     <p id="currentCondition" class="currentWeatherCondition">
-      Loading weather...
+      Loading...
     </p>
   </div>
 
@@ -191,6 +191,7 @@
 
 <script>
   import { countryCodeEmoji } from 'country-code-emoji';
+
   type TemperatureUnit = 'celsius' | 'fahrenheit';
 
   type WeatherData = {
@@ -352,6 +353,7 @@
     }>;
 
     currentUnit = customEvent.detail.unit;
+
     displayTemperature();
   });
 </script>

@@ -1,7 +1,23 @@
 import Globe from 'globe.gl';
 
-//Create Globe
-const globe = new Globe(document.getElementById('globe')!);
+// Create Globe
+const globeElement = document.getElementById('globe');
+
+if (!globeElement) {
+  throw new Error('Globe container not found');
+}
+
+const globe = new Globe(globeElement);
+
+// Set globe size to viewport
+function resizeGlobe(): void {
+  globe.width(window.innerWidth);
+  globe.height(window.innerHeight);
+}
+
+resizeGlobe();
+
+window.addEventListener('resize', resizeGlobe);
 
 globe.globeImageUrl(
   '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
@@ -10,10 +26,11 @@ globe.globeImageUrl(
 globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.5;
 
-//move to selected city
+// Move to selected city
 export function moveGlobe(place: any): void {
-  // stop rotating
+  // Stop rotating
   globe.controls().autoRotate = false;
+
   // Move and zoom to selected city
   globe.pointOfView(
     {
