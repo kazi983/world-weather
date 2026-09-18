@@ -126,7 +126,7 @@ const title = 'SMK World Weather';
       // Functions
       // ==========================================================================
 
-      function renderDropdown(items: any[]): void {
+      function renderDropdown(items: City[]): void {
         if (!dropdown) return;
 
         dropdown.innerHTML = '';
@@ -154,15 +154,17 @@ const title = 'SMK World Weather';
       // ==========================================================================
 
       searchInput?.addEventListener('input', async () => {
-        const query = searchInput.value.trim();
+        setTimeout(async () => {
+          const query = searchInput.value.trim();
 
-        if (query.length < 2) {
-          dropdown?.classList.add('hidden');
-          return;
-        }
+          if (query.length < 2) {
+            dropdown?.classList.add('hidden');
+            return;
+          }
 
-        const places = await searchPlaces(query);
-        renderDropdown(places);
+          const places = await searchPlaces(query);
+          renderDropdown(places);
+        }, 500);
       });
 
       // Hide dropdown when clicking outside the search area
