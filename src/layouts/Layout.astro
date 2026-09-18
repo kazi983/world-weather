@@ -81,6 +81,7 @@ const title = 'SMK World Weather';
     <script>
       import { $selectedPlace, type City } from '../stores/placeStore';
       import { moveGlobe } from '../scripts/globe';
+      import { debounce } from '../lib/common';
 
       // ==========================================================================
       // DOM
@@ -149,22 +150,25 @@ const title = 'SMK World Weather';
         dropdown.classList.remove('hidden');
       }
 
+      async function fetchCities(query: string) {
+        if (query.length < 2) {
+          dropdown?.classList.add('hidden');
+          return;
+        }
+
+        const places = await searchPlaces(query);
+        renderDropdown(places);
+      }
+
+      const debouncedFetchCities = debounce(fetchCities, 500);
+
       // ==========================================================================
       // Event listeners
       // ==========================================================================
+      searchInput?.addEventListener('input', () => {
+        const query = searchInput.value.trim();
 
-      searchInput?.addEventListener('input', async () => {
-        setTimeout(async () => {
-          const query = searchInput.value.trim();
-
-          if (query.length < 2) {
-            dropdown?.classList.add('hidden');
-            return;
-          }
-
-          const places = await searchPlaces(query);
-          renderDropdown(places);
-        }, 500);
+        debouncedFetchCities(query);
       });
 
       // Hide dropdown when clicking outside the search area
