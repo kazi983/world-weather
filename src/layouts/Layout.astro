@@ -79,7 +79,7 @@ const title = 'SMK World Weather';
     </style>
 
     <script>
-      import { $selectedPlace } from '../stores/placeStore';
+      import { $selectedPlace, type City } from '../stores/placeStore';
       import { moveGlobe } from '../scripts/globe';
 
       // ==========================================================================
@@ -96,7 +96,7 @@ const title = 'SMK World Weather';
       const PLACES_URL = 'https://api.placekit.co/search';
       const PLACEKIT_API_KEY = import.meta.env.PUBLIC_PLACEKIT_API_KEY;
 
-      let searchResults: any[] = [];
+      let searchResults: City[] = [];
 
       async function searchPlaces(query: string) {
         const response = await fetch(PLACES_URL, {

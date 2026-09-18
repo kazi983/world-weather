@@ -1,4 +1,5 @@
 import Globe from 'globe.gl';
+import type { City } from '../stores/placeStore';
 
 // Create Globe
 const globeElement = document.getElementById('globe');
@@ -27,7 +28,7 @@ globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.5;
 
 // Move to selected city
-export function moveGlobe(place: any): void {
+export function moveGlobe(place: City): void {
   // Stop rotating
   globe.controls().autoRotate = false;
 
