@@ -52,7 +52,7 @@ const title = 'SMK World Weather';
           />
 
           <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
-          <ul id="dropdown"></ul>
+          <ul id="dropdown" class="hidden"></ul>
         </div>
       </header>
 
@@ -62,9 +62,6 @@ const title = 'SMK World Weather';
       /// <reference types="jquery" />
       import { selectedPlace } from '../stores/weatherStore';
       import { moveGlobe } from '../scripts/globe';
-
-      // Hide dropdown on initial load
-      $('#dropdown').addClass('hidden');
 
       // API
       const PLACES_URL = 'https://api.placekit.co/search';
