@@ -30,10 +30,6 @@
     align-items: center;
   }
 
-  :global(.favoriteListEmpty) {
-    cursor: pointer;
-  }
-
   :global(.favoriteListItemButton) {
     width: 100%;
     text-align: left;
@@ -93,7 +89,6 @@
     if (favoriteCities.length === 0) {
       const placeHolder = document.createElement('li');
 
-      placeHolder.classList.add('favoriteListEmpty');
       placeHolder.textContent = '---';
 
       favoriteList.append(placeHolder);
