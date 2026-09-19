@@ -91,7 +91,8 @@
   }
 
   :global(.hourCardIcon) {
-    font-size: 2rem;
+    width: 5rem;
+    height: 5rem;
   }
 
   :global(.hourCardTemperature) {
@@ -136,6 +137,7 @@
   import {
     celsiusToFahrenheit,
     getWeatherDescription,
+    getWeatherIconUrl,
   } from '../scripts/weatherDisplay';
 
   let weatherData: WeatherApiResponse | null = null;
@@ -192,9 +194,10 @@
       timeElement.className = 'hourCardTime';
       timeElement.textContent = formattedTime;
 
-      const iconElement = document.createElement('span');
+      const iconElement = document.createElement('img');
       iconElement.className = 'hourCardIcon';
-      iconElement.textContent = description.icon;
+      iconElement.alt = '';
+      iconElement.src = getWeatherIconUrl(description.icon);
 
       const temperatureElement = document.createElement('span');
       temperatureElement.className = 'hourCardTemperature';

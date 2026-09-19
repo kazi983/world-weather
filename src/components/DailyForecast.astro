@@ -9,35 +9,35 @@
   <div id="dailyForecastList" class="dailyForecastList">
     <button class="forecastCard active" type="button" data-day-index="0">
       <span class="forecastCardDay">Today</span>
-      <span class="forecastCardIcon">☀️</span>
+      <img class="forecastCardIcon" alt="" />
       <span class="forecastCardTemperature">--°</span>
       <span class="forecastCardCondition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="1">
       <span class="forecastCardDay">Day 2</span>
-      <span class="forecastCardIcon">🌤️</span>
+      <img class="forecastCardIcon" alt="" />
       <span class="forecastCardTemperature">--°</span>
       <span class="forecastCardCondition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="2">
       <span class="forecastCardDay">Day 3</span>
-      <span class="forecastCardIcon">☁️</span>
+      <img class="forecastCardIcon" alt="" />
       <span class="forecastCardTemperature">--°</span>
       <span class="forecastCardCondition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="3">
       <span class="forecastCardDay">Day 4</span>
-      <span class="forecastCardIcon">🌧️</span>
+      <img class="forecastCardIcon" alt="" />
       <span class="forecastCardTemperature">--°</span>
       <span class="forecastCardCondition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="4">
       <span class="forecastCardDay">Day 5</span>
-      <span class="forecastCardIcon">☀️</span>
+      <img class="forecastCardIcon" alt="" />
       <span class="forecastCardTemperature">--°</span>
       <span class="forecastCardCondition">--</span>
     </button>
@@ -117,7 +117,8 @@
   }
 
   .forecastCardIcon {
-    font-size: 2rem;
+    width: 6rem;
+    height: 6rem;
   }
 
   .forecastCardTemperature {
@@ -159,6 +160,7 @@
   import {
     celsiusToFahrenheit,
     getWeatherDescription,
+    getWeatherIconUrl,
   } from '../scripts/weatherDisplay';
 
   let dailyWeatherData: WeatherApiResponse['daily'] | null = null;
@@ -177,7 +179,8 @@
     forecastCards.forEach((card, index) => {
       const dayElement = card.querySelector<HTMLElement>('.forecastCardDay');
 
-      const iconElement = card.querySelector<HTMLElement>('.forecastCardIcon');
+      const iconElement =
+        card.querySelector<HTMLImageElement>('.forecastCardIcon');
 
       const temperatureElement = card.querySelector<HTMLElement>(
         '.forecastCardTemperature',
@@ -205,7 +208,7 @@
       }
 
       if (iconElement) {
-        iconElement.textContent = weatherDescription.icon;
+        iconElement.src = getWeatherIconUrl(weatherDescription.icon);
       }
 
       if (temperatureElement) {
