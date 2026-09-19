@@ -3,20 +3,58 @@ import Layout from '../layouts/Layout.astro';
 import CurrentWeather from '../components/CurrentWeather.astro';
 import DailyForecast from '../components/DailyForecast.astro';
 import HourlyForecast from '../components/HourlyForecast.astro';
-import TemperatureToggle from '../components/TemperatureToggle.astro';
 ---
 
 <Layout>
   <main>
-    <!-- Sarai: Temperature Unit Toggle -->
-    <TemperatureToggle />
-
     <!-- Sarai: Weather UI -->
     <CurrentWeather />
-    <DailyForecast />
-    <HourlyForecast />
+
+    <div class="forecastDock">
+      <DailyForecast />
+      <div class="dockDivider"></div>
+      <HourlyForecast />
+    </div>
   </main>
 </Layout>
+
+<style lang="scss">
+  @use '../sass/variables' as *;
+
+  .forecastDock {
+    width: min(900px, calc(100% - 2rem));
+    margin: 2rem auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: $panel-bg;
+    border: 1px solid $panel-border;
+    border-radius: 1.75rem;
+    color: $text-primary;
+    -webkit-backdrop-filter: blur($panel-blur);
+    backdrop-filter: blur($panel-blur);
+    box-shadow: 0 20px 60px rgb(0 0 0 / 45%);
+  }
+
+  .dockDivider {
+    height: 1px;
+    background: $chip-border;
+  }
+
+  @media (min-width: 960px) {
+    .forecastDock {
+      width: 100%;
+      margin: auto auto 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .forecastDock {
+      padding: 1.25rem;
+    }
+  }
+</style>
 
 <script>
   import { type City, $selectedPlace } from '../stores/placeStore';
@@ -61,7 +99,9 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
 
   function getLocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, fallback);
+      navigator.geolocation.getCurrentPosition(success, fallback, {
+        timeout: 3000,
+      });
     }
   }
 

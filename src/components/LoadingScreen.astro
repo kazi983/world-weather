@@ -1,5 +1,5 @@
-<div id="loadingScreen">
-  <div class="loadingContent">
+<div id="loadingScreen" class="loadingScreen">
+  <div id="loadingContent" class="loadingContent">
     <div class="loadingGlobe">🌍</div>
 
     <h1>SMK WORLD WEATHER</h1>
@@ -13,7 +13,7 @@
 </div>
 
 <style>
-  #loadingScreen {
+  .loadingScreen {
     position: fixed;
     inset: 0;
     z-index: 9999;
@@ -30,13 +30,17 @@
       visibility 0.6s ease;
   }
 
-  #loadingScreen.hidden {
-    opacity: 0;
-    visibility: hidden;
-  }
-
   .loadingContent {
     text-align: center;
+    transition:
+      opacity 0.05s ease,
+      visibility 0.05s ease;
+  }
+
+  .loadingScreen.hidden,
+  .loadingContent.hidden {
+    opacity: 0;
+    visibility: hidden;
   }
 
   .loadingGlobe {
@@ -98,8 +102,10 @@
   import { $appError } from '../stores/errorStore';
 
   const loadingScreen = document.querySelector('#loadingScreen');
+  const loadingContent = document.querySelector('#loadingContent');
 
   function hideLoadingScreen() {
+    loadingContent?.classList.add('hidden');
     loadingScreen?.classList.add('hidden');
   }
 

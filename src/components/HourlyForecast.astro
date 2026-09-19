@@ -5,29 +5,18 @@
       <h2>3-Hour Forecast</h2>
     </div>
 
-    <p id="hourlySelectedDay">Today</p>
+    <p id="hourlySelectedDay" class="text-transition">
+      Today
+    </p>
   </div>
 
-  <div id="hourlyForecastList" class="hourlyForecastList">
+  <div id="hourlyForecastList" class="hourlyForecastList text-transition">
     <p class="hourlyLoading">Loading hourly forecast...</p>
   </div>
 </section>
 
 <style lang="scss">
   @use '../sass/variables' as *;
-
-  .hourlyForecast {
-    width: min(900px, calc(100% - 2rem));
-    margin: 2rem auto;
-    padding: 2rem;
-    background: $panel-bg;
-    border: 1px solid $panel-border;
-    border-radius: 1.25rem;
-    color: $text-primary;
-    backdrop-filter: blur($panel-blur);
-    -webkit-backdrop-filter: blur($panel-blur);
-    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
-  }
 
   .hourlyForecastHeading {
     display: flex;
@@ -58,6 +47,7 @@
 
   .hourlyForecastList {
     display: flex;
+    flex-direction: column;
     gap: 0.75rem;
     overflow-x: auto;
     padding-bottom: 0.5rem;
@@ -66,9 +56,9 @@
 
   :global(.hourCard) {
     display: flex;
+    justify-content: space-between;
     min-width: 130px;
     flex: 1;
-    flex-direction: column;
     align-items: center;
     gap: 0.65rem;
     padding: 1.25rem 0.75rem;
@@ -91,7 +81,8 @@
   }
 
   :global(.hourCardIcon) {
-    font-size: 2rem;
+    width: 5rem;
+    height: 5rem;
   }
 
   :global(.hourCardTemperature) {
@@ -110,10 +101,6 @@
   }
 
   @media (max-width: 600px) {
-    .hourlyForecast {
-      padding: 1.25rem;
-    }
-
     .hourlyForecastHeading {
       align-items: flex-start;
       flex-direction: column;
@@ -121,6 +108,16 @@
 
     :global(.hourCard) {
       min-width: 120px;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .hourlyForecastList {
+      flex-direction: row;
+    }
+
+    :global(.hourCard) {
+      flex-direction: column;
     }
   }
 </style>
@@ -136,7 +133,9 @@
   import {
     celsiusToFahrenheit,
     getWeatherDescription,
+    getWeatherIconUrl,
   } from '../scripts/weatherDisplay';
+  import { setTextWithTransition, withTransition } from '../lib/common';
 
   let weatherData: WeatherApiResponse | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
@@ -154,65 +153,68 @@
       return;
     }
 
-    hourlyForecastList.innerHTML = '';
+    withTransition(hourlyForecastList, () => {
+      hourlyForecastList.innerHTML = '';
 
-    const startIndex = dayIndex * 24;
-    const endIndex = startIndex + 24;
+      const startIndex = dayIndex * 24;
+      const endIndex = startIndex + 24;
 
-    for (let index = startIndex; index < endIndex; index += 3) {
-      const time = weatherData.hourly.time[index];
+      for (let index = startIndex; index < endIndex; index += 3) {
+        const time = weatherData!.hourly.time[index];
 
-      if (!time) {
-        continue;
+        if (!time) {
+          continue;
+        }
+
+        let temperature = weatherData!.hourly.temperature_2m[index];
+
+        if (currentUnit === 'fahrenheit') {
+          temperature = celsiusToFahrenheit(temperature);
+        }
+
+        const unit = currentUnit === 'fahrenheit' ? '°F' : '°C';
+
+        const weatherCode = weatherData!.hourly.weather_code[index];
+
+        const description = getWeatherDescription(weatherCode);
+
+        const date = new Date(time);
+
+        const formattedTime = date.toLocaleTimeString('en-CA', {
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+
+        const hourCard = document.createElement('div');
+        hourCard.className = 'hourCard';
+
+        const timeElement = document.createElement('span');
+        timeElement.className = 'hourCardTime';
+        timeElement.textContent = formattedTime;
+
+        const iconElement = document.createElement('img');
+        iconElement.className = 'hourCardIcon';
+        iconElement.alt = '';
+        iconElement.src = getWeatherIconUrl(description.icon);
+
+        const temperatureElement = document.createElement('span');
+        temperatureElement.className = 'hourCardTemperature';
+        temperatureElement.textContent = `${Math.round(temperature)}${unit}`;
+
+        const conditionElement = document.createElement('span');
+        conditionElement.className = 'hourCardCondition';
+        conditionElement.textContent = description.condition;
+
+        hourCard.append(
+          timeElement,
+          iconElement,
+          temperatureElement,
+          conditionElement,
+        );
+
+        hourlyForecastList.append(hourCard);
       }
-
-      let temperature = weatherData.hourly.temperature_2m[index];
-
-      if (currentUnit === 'fahrenheit') {
-        temperature = celsiusToFahrenheit(temperature);
-      }
-
-      const unit = currentUnit === 'fahrenheit' ? '°F' : '°C';
-
-      const weatherCode = weatherData.hourly.weather_code[index];
-
-      const description = getWeatherDescription(weatherCode);
-
-      const date = new Date(time);
-
-      const formattedTime = date.toLocaleTimeString('en-CA', {
-        hour: 'numeric',
-        minute: '2-digit',
-      });
-
-      const hourCard = document.createElement('div');
-      hourCard.className = 'hourCard';
-
-      const timeElement = document.createElement('span');
-      timeElement.className = 'hourCardTime';
-      timeElement.textContent = formattedTime;
-
-      const iconElement = document.createElement('span');
-      iconElement.className = 'hourCardIcon';
-      iconElement.textContent = description.icon;
-
-      const temperatureElement = document.createElement('span');
-      temperatureElement.className = 'hourCardTemperature';
-      temperatureElement.textContent = `${Math.round(temperature)}${unit}`;
-
-      const conditionElement = document.createElement('span');
-      conditionElement.className = 'hourCardCondition';
-      conditionElement.textContent = description.condition;
-
-      hourCard.append(
-        timeElement,
-        iconElement,
-        temperatureElement,
-        conditionElement,
-      );
-
-      hourlyForecastList.append(hourCard);
-    }
+    });
   }
 
   function updateSelectedDayLabel(dayIndex: number): void {
@@ -231,10 +233,12 @@
 
     const date = new Date(`${dateStr}T12:00:00`);
 
-    selectedDay.textContent =
+    setTextWithTransition(
+      selectedDay,
       dayIndex === 0
         ? 'Today'
-        : date.toLocaleDateString('en-CA', { weekday: 'short' });
+        : date.toLocaleDateString('en-CA', { weekday: 'short' }),
+    );
   }
 
   $weatherData.subscribe((info) => {

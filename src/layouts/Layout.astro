@@ -2,6 +2,7 @@
 import '../sass/global.scss';
 import FavoriteCities from '../components/FavoriteCities.astro';
 import LoadingScreen from '../components/LoadingScreen.astro';
+import TemperatureToggle from '../components/TemperatureToggle.astro';
 
 const title = 'SMK World Weather';
 ---
@@ -26,26 +27,46 @@ const title = 'SMK World Weather';
       </div>
 
       <header>
-        <div class="headerRow">
+        <div class="navRow">
           <h1 class="font-title siteTitle">
             <a href="/">{title}</a>
           </h1>
 
-          <div class="favoritesWrapper">
-            <FavoriteCities />
+          <div class="searchContainer">
+            <svg
+              class="searchIcon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+
+            <input
+              id="search"
+              type="text"
+              placeholder="Search a city..."
+              autocomplete="off"
+            />
+
+            <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
+            <ul id="dropdown" class="hidden"></ul>
           </div>
-        </div>
 
-        <div class="searchContainer">
-          <input
-            id="search"
-            type="text"
-            placeholder="Search a city..."
-            autocomplete="off"
-          />
+          <div class="navControls">
+            <TemperatureToggle />
 
-          <!-- autocomplete = Don't show the browser's saved suggestions for this input. -->
-          <ul id="dropdown" class="hidden"></ul>
+            <div class="favoritesWrapper">
+              <FavoriteCities />
+            </div>
+          </div>
         </div>
       </header>
 
@@ -69,31 +90,45 @@ const title = 'SMK World Weather';
         display: none;
       }
 
-      .headerRow {
+      .navRow {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: space-between;
-        gap: 2rem;
-        margin-bottom: 1.5rem;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
 
       .siteTitle {
         font-weight: 700;
-        text-align: center;
+        white-space: nowrap;
       }
 
-      .favoritesWrapper {
-        width: 100%;
+      .searchContainer {
+        flex: 1 1 240px;
+        max-width: 380px;
       }
 
-      @media (min-width: 640px) {
-        .headerRow {
-          flex-direction: row;
+      .navControls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 640px) {
+        .navRow {
+          justify-content: center;
+          text-align: center;
         }
 
-        .favoritesWrapper {
-          width: auto;
+        .searchContainer {
+          order: 3;
+          flex-basis: 100%;
+          max-width: none;
+        }
+
+        .navControls {
+          order: 2;
         }
       }
     </style>

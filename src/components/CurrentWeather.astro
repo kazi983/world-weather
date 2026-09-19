@@ -27,27 +27,28 @@
   <div class="currentWeatherHeader">
     <div>
       <p class="currentWeatherLabel">Current Weather</p>
-      <h2 id="currentCity">Vancouver</h2>
-      <p id="currentDate">Today</p>
+      <h2 id="currentCity" class="text-transition">
+        Vancouver
+      </h2>
+      <p id="currentDate" class="text-transition">
+        Today
+      </p>
     </div>
 
-    <span
-      id="currentWeatherIcon"
-      class="currentWeatherIcon"
-      role="img"
-      aria-label="Weather condition"
-    >
-      ☀️
-    </span>
+    <img id="currentWeatherIcon" class="currentWeatherIcon" alt="" />
   </div>
 
   <div class="currentWeatherMain">
     <p class="currentWeatherTemperature">
-      <span id="currentTemperature">--</span>
-      <span id="currentTemperatureUnit">°C</span>
+      <span id="currentTemperature" class="text-transition">
+        --
+      </span>
+      <span id="currentTemperatureUnit" class="text-transition">
+        °C
+      </span>
     </p>
 
-    <p id="currentCondition" class="currentWeatherCondition">
+    <p id="currentCondition" class="currentWeatherCondition text-transition">
       Loading...
     </p>
   </div>
@@ -57,7 +58,9 @@
       <span aria-hidden="true">💧</span>
       <div>
         <p class="weatherDetailLabel">Humidity</p>
-        <p id="currentHumidity">--%</p>
+        <p id="currentHumidity" class="text-transition">
+          --%
+        </p>
       </div>
     </div>
 
@@ -65,7 +68,9 @@
       <span aria-hidden="true">💨</span>
       <div>
         <p class="weatherDetailLabel">Wind</p>
-        <p id="currentWind">-- km/h</p>
+        <p id="currentWind" class="text-transition">
+          -- km/h
+        </p>
       </div>
     </div>
   </div>
@@ -80,11 +85,18 @@
     padding: 2rem;
     background: $panel-bg;
     border: 1px solid $panel-border;
-    border-radius: 1.25rem;
+    border-radius: 1.75rem;
     color: $text-primary;
-    backdrop-filter: blur($panel-blur);
     -webkit-backdrop-filter: blur($panel-blur);
-    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+    backdrop-filter: blur($panel-blur);
+    box-shadow: 0 20px 60px rgb(0 0 0 / 45%);
+  }
+
+  @media (min-width: 960px) {
+    .currentWeather {
+      width: min(600px, 100%);
+      margin: 0;
+    }
   }
 
   .favoriteButton {
@@ -127,7 +139,10 @@
   }
 
   .currentWeatherIcon {
-    font-size: clamp(3rem, 8vw, 5rem);
+    display: inline-block;
+    width: clamp(7rem, 14vw, 10rem);
+    height: clamp(7rem, 14vw, 10rem);
+    flex-shrink: 0;
   }
 
   .currentWeatherMain {
@@ -200,7 +215,9 @@
   import {
     celsiusToFahrenheit,
     getWeatherDescription,
+    getWeatherIconUrl,
   } from '../scripts/weatherDisplay';
+  import { setTextWithTransition } from '../lib/common';
 
   let currentTemperatureCelsius: number | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
@@ -223,17 +240,21 @@
     }
 
     if (currentUnit === 'fahrenheit') {
-      temperature.textContent = Math.round(
-        celsiusToFahrenheit(currentTemperatureCelsius),
-      ).toString();
+      setTextWithTransition(
+        temperature,
+        Math.round(celsiusToFahrenheit(currentTemperatureCelsius)).toString(),
+      );
 
-      temperatureUnit.textContent = '°F';
+      setTextWithTransition(temperatureUnit, '°F');
       return;
     }
 
-    temperature.textContent = Math.round(currentTemperatureCelsius).toString();
+    setTextWithTransition(
+      temperature,
+      Math.round(currentTemperatureCelsius).toString(),
+    );
 
-    temperatureUnit.textContent = '°C';
+    setTextWithTransition(temperatureUnit, '°C');
   }
 
   function updateCurrentWeather(info: WeatherInfo | null) {
@@ -252,7 +273,9 @@
 
     const condition = document.querySelector<HTMLElement>('#currentCondition');
 
-    const icon = document.querySelector<HTMLElement>('#currentWeatherIcon');
+    const icon = document.querySelector<HTMLImageElement>(
+      '#currentWeatherIcon',
+    );
 
     const cityElement = document.querySelector<HTMLElement>('#currentCity');
 
@@ -265,31 +288,54 @@
     displayTemperature();
 
     if (humidity) {
-      humidity.textContent = `${weather.current.relative_humidity_2m}%`;
+      setTextWithTransition(
+        humidity,
+        `${weather.current.relative_humidity_2m}%`,
+      );
     }
 
     if (wind) {
-      wind.textContent = `${Math.round(weather.current.wind_speed_10m)} km/h`;
+      setTextWithTransition(
+        wind,
+        `${Math.round(weather.current.wind_speed_10m)} km/h`,
+      );
     }
 
     if (condition) {
-      condition.textContent = weatherDescription.condition;
+      setTextWithTransition(condition, weatherDescription.condition);
     }
 
     if (icon) {
-      icon.textContent = weatherDescription.icon;
+      icon.src = getWeatherIconUrl(weatherDescription.icon);
+      icon.alt = weatherDescription.condition;
     }
 
     if (cityElement) {
-      cityElement.textContent = countryFlag ? countryFlag + ' ' + city : city;
+      setTextWithTransition(
+        cityElement,
+        countryFlag ? countryFlag + ' ' + city : city,
+      );
     }
 
     if (date) {
-      date.textContent = new Date().toLocaleDateString('en-CA', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      });
+      // `weather.daily.time[0]` is "today" in the selected location's own
+      // timezone (the API is queried with `timezone=auto`), which can differ
+      // from the browser's local date. Falls back to the browser date only
+      // if the API response is missing it.
+      const todayDateString = weather.daily.time[0];
+
+      const todayDate = todayDateString
+        ? new Date(`${todayDateString}T12:00:00`)
+        : new Date();
+
+      setTextWithTransition(
+        date,
+        todayDate.toLocaleDateString('en-CA', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        }),
+      );
     }
   }
 

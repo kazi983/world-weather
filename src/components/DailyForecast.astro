@@ -8,57 +8,44 @@
 
   <div id="dailyForecastList" class="dailyForecastList">
     <button class="forecastCard active" type="button" data-day-index="0">
-      <span class="forecastCardDay">Today</span>
-      <span class="forecastCardIcon">☀️</span>
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardDay text-transition">Today</span>
+      <img class="forecastCardIcon" alt="" />
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="1">
-      <span class="forecastCardDay">Day 2</span>
-      <span class="forecastCardIcon">🌤️</span>
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardDay text-transition">Day 2</span>
+      <img class="forecastCardIcon" alt="" />
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="2">
-      <span class="forecastCardDay">Day 3</span>
-      <span class="forecastCardIcon">☁️</span>
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardDay text-transition">Day 3</span>
+      <img class="forecastCardIcon" alt="" />
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="3">
-      <span class="forecastCardDay">Day 4</span>
-      <span class="forecastCardIcon">🌧️</span>
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardDay text-transition">Day 4</span>
+      <img class="forecastCardIcon" alt="" />
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="4">
-      <span class="forecastCardDay">Day 5</span>
-      <span class="forecastCardIcon">☀️</span>
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardDay text-transition">Day 5</span>
+      <img class="forecastCardIcon" alt="" />
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
   </div>
 </section>
 
 <style lang="scss">
   @use '../sass/variables' as *;
-
-  .dailyForecast {
-    width: min(900px, calc(100% - 2rem));
-    margin: 2rem auto;
-    padding: 2rem;
-    background: $panel-bg;
-    border: 1px solid $panel-border;
-    border-radius: 1.25rem;
-    color: $text-primary;
-    backdrop-filter: blur($panel-blur);
-    -webkit-backdrop-filter: blur($panel-blur);
-    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
-  }
 
   .dailyForecastHeading {
     margin-bottom: 1.5rem;
@@ -86,7 +73,6 @@
 
   .forecastCard {
     display: flex;
-    min-width: 0;
     flex-direction: column;
     align-items: center;
     gap: 0.65rem;
@@ -117,12 +103,25 @@
   }
 
   .forecastCardIcon {
-    font-size: 2rem;
+    width: 3rem;
+    height: 3rem;
+
+    @media (min-width: 960px) {
+      width: 6rem;
+      height: 6rem;
+    }
   }
 
   .forecastCardTemperature {
     font-size: 1.15rem;
     font-weight: 700;
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: 960px) {
+      flex-direction: row;
+      gap: 1rem;
+    }
   }
 
   .forecastCardCondition {
@@ -132,10 +131,6 @@
   }
 
   @media (max-width: 700px) {
-    .dailyForecast {
-      padding: 1.25rem;
-    }
-
     .dailyForecastList {
       display: flex;
       overflow-x: auto;
@@ -143,7 +138,7 @@
     }
 
     .forecastCard {
-      min-width: 130px;
+      padding-inline: 0.25rem;
     }
   }
 </style>
@@ -159,7 +154,9 @@
   import {
     celsiusToFahrenheit,
     getWeatherDescription,
+    getWeatherIconUrl,
   } from '../scripts/weatherDisplay';
+  import { setTextWithTransition, withTransition } from '../lib/common';
 
   let dailyWeatherData: WeatherApiResponse['daily'] | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
@@ -177,7 +174,8 @@
     forecastCards.forEach((card, index) => {
       const dayElement = card.querySelector<HTMLElement>('.forecastCardDay');
 
-      const iconElement = card.querySelector<HTMLElement>('.forecastCardIcon');
+      const iconElement =
+        card.querySelector<HTMLImageElement>('.forecastCardIcon');
 
       const temperatureElement = card.querySelector<HTMLElement>(
         '.forecastCardTemperature',
@@ -201,11 +199,11 @@
       );
 
       if (dayElement) {
-        dayElement.textContent = dayName;
+        setTextWithTransition(dayElement, dayName);
       }
 
       if (iconElement) {
-        iconElement.textContent = weatherDescription.icon;
+        iconElement.src = getWeatherIconUrl(weatherDescription.icon);
       }
 
       if (temperatureElement) {
@@ -219,11 +217,22 @@
 
         const unit = currentUnit === 'fahrenheit' ? '°F' : '°C';
 
-        temperatureElement.textContent = `${Math.round(max)}° / ${Math.round(min)}° ${unit}`;
+        withTransition(temperatureElement, () => {
+          const maxTempElement = document.createElement('span');
+          const minTempElement = document.createElement('span');
+
+          maxTempElement.textContent = `${Math.round(max)}${unit}`;
+          minTempElement.textContent = `${Math.round(min)}${unit}`;
+
+          temperatureElement.textContent = '';
+
+          temperatureElement.append(maxTempElement);
+          temperatureElement.append(minTempElement);
+        });
       }
 
       if (conditionElement) {
-        conditionElement.textContent = weatherDescription.condition;
+        setTextWithTransition(conditionElement, weatherDescription.condition);
       }
     });
   }
