@@ -8,38 +8,38 @@
 
   <div id="dailyForecastList" class="dailyForecastList">
     <button class="forecastCard active" type="button" data-day-index="0">
-      <span class="forecastCardDay">Today</span>
+      <span class="forecastCardDay text-transition">Today</span>
       <img class="forecastCardIcon" alt="" />
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="1">
-      <span class="forecastCardDay">Day 2</span>
+      <span class="forecastCardDay text-transition">Day 2</span>
       <img class="forecastCardIcon" alt="" />
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="2">
-      <span class="forecastCardDay">Day 3</span>
+      <span class="forecastCardDay text-transition">Day 3</span>
       <img class="forecastCardIcon" alt="" />
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="3">
-      <span class="forecastCardDay">Day 4</span>
+      <span class="forecastCardDay text-transition">Day 4</span>
       <img class="forecastCardIcon" alt="" />
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
 
     <button class="forecastCard" type="button" data-day-index="4">
-      <span class="forecastCardDay">Day 5</span>
+      <span class="forecastCardDay text-transition">Day 5</span>
       <img class="forecastCardIcon" alt="" />
-      <span class="forecastCardTemperature">--°</span>
-      <span class="forecastCardCondition">--</span>
+      <span class="forecastCardTemperature text-transition">--°</span>
+      <span class="forecastCardCondition text-transition">--</span>
     </button>
   </div>
 </section>
@@ -156,6 +156,7 @@
     getWeatherDescription,
     getWeatherIconUrl,
   } from '../scripts/weatherDisplay';
+  import { setTextWithTransition, withTransition } from '../lib/common';
 
   let dailyWeatherData: WeatherApiResponse['daily'] | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
@@ -198,7 +199,7 @@
       );
 
       if (dayElement) {
-        dayElement.textContent = dayName;
+        setTextWithTransition(dayElement, dayName);
       }
 
       if (iconElement) {
@@ -216,20 +217,22 @@
 
         const unit = currentUnit === 'fahrenheit' ? '°F' : '°C';
 
-        const maxTempElement = document.createElement('span');
-        const minTempElement = document.createElement('span');
+        withTransition(temperatureElement, () => {
+          const maxTempElement = document.createElement('span');
+          const minTempElement = document.createElement('span');
 
-        maxTempElement.textContent = `${Math.round(max)}${unit}`;
-        minTempElement.textContent = `${Math.round(min)}${unit}`;
+          maxTempElement.textContent = `${Math.round(max)}${unit}`;
+          minTempElement.textContent = `${Math.round(min)}${unit}`;
 
-        temperatureElement.textContent = '';
+          temperatureElement.textContent = '';
 
-        temperatureElement.append(maxTempElement);
-        temperatureElement.append(minTempElement);
+          temperatureElement.append(maxTempElement);
+          temperatureElement.append(minTempElement);
+        });
       }
 
       if (conditionElement) {
-        conditionElement.textContent = weatherDescription.condition;
+        setTextWithTransition(conditionElement, weatherDescription.condition);
       }
     });
   }

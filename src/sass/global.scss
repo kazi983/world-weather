@@ -156,6 +156,20 @@ textarea {
 }
 
 /* ============================================
+   Text transition
+   Fades text out/in when its content is swapped by JS.
+   Duration must match TEXT_TRANSITION_DELAY in src/lib/common.ts.
+============================================ */
+
+.text-transition {
+  transition: opacity 0.2s ease;
+}
+
+.text-transition.is-updating {
+  opacity: 0;
+}
+
+/* ============================================
    Individual styles
 ============================================ */
 

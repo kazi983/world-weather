@@ -27,8 +27,12 @@
   <div class="currentWeatherHeader">
     <div>
       <p class="currentWeatherLabel">Current Weather</p>
-      <h2 id="currentCity">Vancouver</h2>
-      <p id="currentDate">Today</p>
+      <h2 id="currentCity" class="text-transition">
+        Vancouver
+      </h2>
+      <p id="currentDate" class="text-transition">
+        Today
+      </p>
     </div>
 
     <img id="currentWeatherIcon" class="currentWeatherIcon" alt="" />
@@ -36,11 +40,15 @@
 
   <div class="currentWeatherMain">
     <p class="currentWeatherTemperature">
-      <span id="currentTemperature">--</span>
-      <span id="currentTemperatureUnit">°C</span>
+      <span id="currentTemperature" class="text-transition">
+        --
+      </span>
+      <span id="currentTemperatureUnit" class="text-transition">
+        °C
+      </span>
     </p>
 
-    <p id="currentCondition" class="currentWeatherCondition">
+    <p id="currentCondition" class="currentWeatherCondition text-transition">
       Loading...
     </p>
   </div>
@@ -50,7 +58,9 @@
       <span aria-hidden="true">💧</span>
       <div>
         <p class="weatherDetailLabel">Humidity</p>
-        <p id="currentHumidity">--%</p>
+        <p id="currentHumidity" class="text-transition">
+          --%
+        </p>
       </div>
     </div>
 
@@ -58,7 +68,9 @@
       <span aria-hidden="true">💨</span>
       <div>
         <p class="weatherDetailLabel">Wind</p>
-        <p id="currentWind">-- km/h</p>
+        <p id="currentWind" class="text-transition">
+          -- km/h
+        </p>
       </div>
     </div>
   </div>
@@ -205,6 +217,7 @@
     getWeatherDescription,
     getWeatherIconUrl,
   } from '../scripts/weatherDisplay';
+  import { setTextWithTransition } from '../lib/common';
 
   let currentTemperatureCelsius: number | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
@@ -227,17 +240,21 @@
     }
 
     if (currentUnit === 'fahrenheit') {
-      temperature.textContent = Math.round(
-        celsiusToFahrenheit(currentTemperatureCelsius),
-      ).toString();
+      setTextWithTransition(
+        temperature,
+        Math.round(celsiusToFahrenheit(currentTemperatureCelsius)).toString(),
+      );
 
-      temperatureUnit.textContent = '°F';
+      setTextWithTransition(temperatureUnit, '°F');
       return;
     }
 
-    temperature.textContent = Math.round(currentTemperatureCelsius).toString();
+    setTextWithTransition(
+      temperature,
+      Math.round(currentTemperatureCelsius).toString(),
+    );
 
-    temperatureUnit.textContent = '°C';
+    setTextWithTransition(temperatureUnit, '°C');
   }
 
   function updateCurrentWeather(info: WeatherInfo | null) {
@@ -271,15 +288,21 @@
     displayTemperature();
 
     if (humidity) {
-      humidity.textContent = `${weather.current.relative_humidity_2m}%`;
+      setTextWithTransition(
+        humidity,
+        `${weather.current.relative_humidity_2m}%`,
+      );
     }
 
     if (wind) {
-      wind.textContent = `${Math.round(weather.current.wind_speed_10m)} km/h`;
+      setTextWithTransition(
+        wind,
+        `${Math.round(weather.current.wind_speed_10m)} km/h`,
+      );
     }
 
     if (condition) {
-      condition.textContent = weatherDescription.condition;
+      setTextWithTransition(condition, weatherDescription.condition);
     }
 
     if (icon) {
@@ -288,15 +311,21 @@
     }
 
     if (cityElement) {
-      cityElement.textContent = countryFlag ? countryFlag + ' ' + city : city;
+      setTextWithTransition(
+        cityElement,
+        countryFlag ? countryFlag + ' ' + city : city,
+      );
     }
 
     if (date) {
-      date.textContent = new Date().toLocaleDateString('en-CA', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      });
+      setTextWithTransition(
+        date,
+        new Date().toLocaleDateString('en-CA', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        }),
+      );
     }
   }
 
