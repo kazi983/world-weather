@@ -47,19 +47,6 @@
 <style lang="scss">
   @use '../sass/variables' as *;
 
-  .dailyForecast {
-    width: min(900px, calc(100% - 2rem));
-    margin: 2rem auto;
-    padding: 2rem;
-    background: $panel-bg;
-    border: 1px solid $panel-border;
-    border-radius: 1.25rem;
-    color: $text-primary;
-    -webkit-backdrop-filter: blur($panel-blur);
-    backdrop-filter: blur($panel-blur);
-    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
-  }
-
   .dailyForecastHeading {
     margin-bottom: 1.5rem;
   }
@@ -86,7 +73,6 @@
 
   .forecastCard {
     display: flex;
-    min-width: 0;
     flex-direction: column;
     align-items: center;
     gap: 0.65rem;
@@ -117,13 +103,25 @@
   }
 
   .forecastCardIcon {
-    width: 6rem;
-    height: 6rem;
+    width: 3rem;
+    height: 3rem;
+
+    @media (min-width: 960px) {
+      width: 6rem;
+      height: 6rem;
+    }
   }
 
   .forecastCardTemperature {
     font-size: 1.15rem;
     font-weight: 700;
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: 960px) {
+      flex-direction: row;
+      gap: 1rem;
+    }
   }
 
   .forecastCardCondition {
@@ -133,10 +131,6 @@
   }
 
   @media (max-width: 700px) {
-    .dailyForecast {
-      padding: 1.25rem;
-    }
-
     .dailyForecastList {
       display: flex;
       overflow-x: auto;
@@ -144,7 +138,7 @@
     }
 
     .forecastCard {
-      min-width: 130px;
+      padding-inline: 0.25rem;
     }
   }
 </style>
@@ -222,7 +216,16 @@
 
         const unit = currentUnit === 'fahrenheit' ? '°F' : '°C';
 
-        temperatureElement.textContent = `${Math.round(max)}° / ${Math.round(min)}° ${unit}`;
+        const maxTempElement = document.createElement('span');
+        const minTempElement = document.createElement('span');
+
+        maxTempElement.textContent = `${Math.round(max)}${unit}`;
+        minTempElement.textContent = `${Math.round(min)}${unit}`;
+
+        temperatureElement.textContent = '';
+
+        temperatureElement.append(maxTempElement);
+        temperatureElement.append(minTempElement);
       }
 
       if (conditionElement) {

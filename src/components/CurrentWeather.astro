@@ -73,11 +73,18 @@
     padding: 2rem;
     background: $panel-bg;
     border: 1px solid $panel-border;
-    border-radius: 1.25rem;
+    border-radius: 1.75rem;
     color: $text-primary;
     -webkit-backdrop-filter: blur($panel-blur);
     backdrop-filter: blur($panel-blur);
-    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+    box-shadow: 0 20px 60px rgb(0 0 0 / 45%);
+  }
+
+  @media (min-width: 960px) {
+    .currentWeather {
+      width: min(600px, 100%);
+      margin: 0;
+    }
   }
 
   .favoriteButton {

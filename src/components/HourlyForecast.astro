@@ -16,19 +16,6 @@
 <style lang="scss">
   @use '../sass/variables' as *;
 
-  .hourlyForecast {
-    width: min(900px, calc(100% - 2rem));
-    margin: 2rem auto;
-    padding: 2rem;
-    background: $panel-bg;
-    border: 1px solid $panel-border;
-    border-radius: 1.25rem;
-    color: $text-primary;
-    -webkit-backdrop-filter: blur($panel-blur);
-    backdrop-filter: blur($panel-blur);
-    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
-  }
-
   .hourlyForecastHeading {
     display: flex;
     align-items: flex-end;
@@ -58,6 +45,7 @@
 
   .hourlyForecastList {
     display: flex;
+    flex-direction: column;
     gap: 0.75rem;
     overflow-x: auto;
     padding-bottom: 0.5rem;
@@ -66,9 +54,9 @@
 
   :global(.hourCard) {
     display: flex;
+    justify-content: space-between;
     min-width: 130px;
     flex: 1;
-    flex-direction: column;
     align-items: center;
     gap: 0.65rem;
     padding: 1.25rem 0.75rem;
@@ -111,10 +99,6 @@
   }
 
   @media (max-width: 600px) {
-    .hourlyForecast {
-      padding: 1.25rem;
-    }
-
     .hourlyForecastHeading {
       align-items: flex-start;
       flex-direction: column;
@@ -122,6 +106,16 @@
 
     :global(.hourCard) {
       min-width: 120px;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .hourlyForecastList {
+      flex-direction: row;
+    }
+
+    :global(.hourCard) {
+      flex-direction: column;
     }
   }
 </style>
