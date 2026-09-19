@@ -61,7 +61,9 @@ import TemperatureToggle from '../components/TemperatureToggle.astro';
 
   function getLocation() {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, fallback);
+      navigator.geolocation.getCurrentPosition(success, fallback, {
+        timeout: 3000,
+      });
     }
   }
 
