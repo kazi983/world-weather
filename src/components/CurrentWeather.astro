@@ -191,30 +191,19 @@
 
 <script>
   import { countryCodeEmoji } from 'country-code-emoji';
-
-  type TemperatureUnit = 'celsius' | 'fahrenheit';
-
-  type WeatherData = {
-    current: {
-      temperature_2m: number;
-      relative_humidity_2m: number;
-      weather_code: number;
-      wind_speed_10m: number;
-    };
-  };
-
-  type WeatherEvent = CustomEvent<{
-    weather: WeatherData;
-    city: string;
-    countryCode: string | null;
-  }>;
+  import {
+    $weatherData,
+    $temperatureUnit,
+    type TemperatureUnit,
+    type WeatherInfo,
+  } from '../stores/weatherStore';
+  import {
+    celsiusToFahrenheit,
+    getWeatherDescription,
+  } from '../scripts/weatherDisplay';
 
   let currentTemperatureCelsius: number | null = null;
   let currentUnit: TemperatureUnit = 'celsius';
-
-  function celsiusToFahrenheit(celsius: number) {
-    return (celsius * 9) / 5 + 32;
-  }
 
   function displayTemperature() {
     if (currentTemperatureCelsius === null) {
@@ -247,56 +236,13 @@
     temperatureUnit.textContent = '°C';
   }
 
-  function getWeatherDescription(code: number) {
-    if (code === 0) {
-      return { condition: 'Clear sky', icon: '☀️' };
+  function updateCurrentWeather(info: WeatherInfo | null) {
+    if (!info) {
+      return;
     }
 
-    if (code === 1 || code === 2) {
-      return { condition: 'Partly cloudy', icon: '🌤️' };
-    }
-
-    if (code === 3) {
-      return { condition: 'Overcast', icon: '☁️' };
-    }
-
-    if (code === 45 || code === 48) {
-      return { condition: 'Fog', icon: '🌫️' };
-    }
-
-    if (code >= 51 && code <= 57) {
-      return { condition: 'Drizzle', icon: '🌦️' };
-    }
-
-    if (code >= 61 && code <= 67) {
-      return { condition: 'Rain', icon: '🌧️' };
-    }
-
-    if (code >= 71 && code <= 77) {
-      return { condition: 'Snow', icon: '❄️' };
-    }
-
-    if (code >= 80 && code <= 82) {
-      return { condition: 'Rain showers', icon: '🌧️' };
-    }
-
-    if (code >= 85 && code <= 86) {
-      return { condition: 'Snow showers', icon: '🌨️' };
-    }
-
-    if (code >= 95) {
-      return { condition: 'Thunderstorm', icon: '⛈️' };
-    }
-
-    return { condition: 'Unknown', icon: '🌡️' };
-  }
-
-  window.addEventListener('weatherDataUpdated', (event) => {
-    const customEvent = event as WeatherEvent;
-    const { weather, city, countryCode } = customEvent.detail;
+    const { weather, city, countryCode } = info;
     const countryFlag = countryCode ? countryCodeEmoji(countryCode) : null;
-
-    currentTemperatureCelsius = weather.current.temperature_2m;
 
     currentTemperatureCelsius = weather.current.temperature_2m;
 
@@ -345,14 +291,12 @@
         day: 'numeric',
       });
     }
-  });
+  }
 
-  window.addEventListener('temperatureUnitChanged', (event) => {
-    const customEvent = event as CustomEvent<{
-      unit: TemperatureUnit;
-    }>;
+  $weatherData.subscribe(updateCurrentWeather);
 
-    currentUnit = customEvent.detail.unit;
+  $temperatureUnit.subscribe((unit) => {
+    currentUnit = unit;
 
     displayTemperature();
   });

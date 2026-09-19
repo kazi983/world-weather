@@ -1,72 +1,35 @@
 import { atom } from 'nanostores';
 
-export type City = {
+export type WeatherApiResponse = {
+  current: {
+    temperature_2m: number;
+    relative_humidity_2m: number;
+    weather_code: number;
+    wind_speed_10m: number;
+  };
+  daily: {
+    time: string[];
+    weather_code: number[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+  };
+  hourly: {
+    time: string[];
+    temperature_2m: number[];
+    weather_code: number[];
+  };
+};
+
+export type WeatherInfo = {
+  weather: WeatherApiResponse;
   city: string;
-  administrative: string;
-  country: string;
-  countrycode: string;
-  lat: number;
-  lng: number;
+  countryCode: string;
 };
 
-export type FavoriteCity = City & {
-  id: string;
-};
+export const $weatherData = atom<WeatherInfo | null>(null);
 
-export const selectedPlace = atom<City | null>(null);
+export type TemperatureUnit = 'celsius' | 'fahrenheit';
 
-const FAVORITE_CITIES_STORAGE_KEY = 'favoriteCities';
+export const $temperatureUnit = atom<TemperatureUnit>('celsius');
 
-/**
- * Creates a unique identifier for a city based on its coordinates.
- */
-function createCityId(place: City): string {
-  return `${place.lat}|${place.lng}`;
-}
-
-/**
- * Retrieves favorite cities from local storage.
- */
-function loadFavoriteCities(): FavoriteCity[] {
-  try {
-    const stored = JSON.parse(
-      localStorage.getItem(FAVORITE_CITIES_STORAGE_KEY) ?? '[]',
-    );
-
-    return Array.isArray(stored) ? stored : [];
-  } catch {
-    return [];
-  }
-}
-
-export const $favoriteCities = atom<FavoriteCity[]>(loadFavoriteCities());
-
-$favoriteCities.listen((favorites) => {
-  localStorage.setItem(FAVORITE_CITIES_STORAGE_KEY, JSON.stringify(favorites));
-});
-
-/**
- * Checks whether a city is currently in the favorites list.
- */
-export function isFavorited(place: City): boolean {
-  const id = createCityId(place);
-
-  return $favoriteCities.get().some((favorite) => favorite.id === id);
-}
-
-/**
- * Adds or removes a city from the favorites list.
- */
-export function toggleFavorite(place: City): void {
-  const targetId = createCityId(place);
-  const currentFavoriteCities = $favoriteCities.get();
-  const alreadyFavorited = currentFavoriteCities.some(
-    (favorite) => favorite.id === targetId,
-  );
-
-  $favoriteCities.set(
-    alreadyFavorited
-      ? currentFavoriteCities.filter((favorite) => favorite.id !== targetId)
-      : [...currentFavoriteCities, { ...place, id: targetId }],
-  );
-}
+export const $selectedDayIndex = atom<number>(0);

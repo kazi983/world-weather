@@ -1,11 +1,11 @@
-<div class="min-w-60">
-  <div id="favoriteListContainer" class="relative flex align-center">
+<div class="favoriteCitiesWrapper">
+  <div id="favoriteListContainer" class="favoriteListContainer">
     <button
       id="favoriteListToggleButton"
       type="button"
       aria-expanded="false"
       aria-controls="favoriteList"
-      class="flex justify-between bg-white/10 backdrop-blur-md p-3 border border-white/15 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-white text-left cursor-pointer favoriteListToggleButton"
+      class="favoriteListToggleButton"
     >
       <span>Favorites</span>
       <span>▼</span>
@@ -19,14 +19,32 @@
   </div>
 </div>
 
+<style lang="scss">
+  .favoriteCitiesWrapper {
+    min-width: 15rem;
+  }
+
+  .favoriteListContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.favoriteListItemButton) {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+  }
+</style>
+
 <script>
+  import { $selectedPlace } from '../stores/placeStore';
   import {
-    selectedPlace,
     $favoriteCities,
     isFavorited,
     toggleFavorite,
     type FavoriteCity,
-  } from '../stores/weatherStore';
+  } from '../stores/favoritesStore';
   import { moveGlobe } from '../scripts/globe';
 
   // ==========================================================================
@@ -52,7 +70,7 @@
   function updateFavoriteButton(): void {
     if (!favoriteButton) throw new Error(`Failed to get DOM: #favoriteButton`);
 
-    const place = selectedPlace.get();
+    const place = $selectedPlace.get();
 
     favoriteButton.setAttribute(
       'aria-pressed',
@@ -71,12 +89,6 @@
     if (favoriteCities.length === 0) {
       const placeHolder = document.createElement('li');
 
-      placeHolder.classList.add(
-        'cursor-pointer',
-        'p-2',
-        'transfer-',
-        'hover:bg-white/10',
-      );
       placeHolder.textContent = '---';
 
       favoriteList.append(placeHolder);
@@ -85,10 +97,9 @@
         const favoriteCityItem = document.createElement('li');
         const favoriteCityButton = document.createElement('button');
 
-        favoriteCityItem.classList.add();
         favoriteCityButton.dataset.id = favorite.id;
         favoriteCityButton.type = 'button';
-        favoriteCityButton.classList.add('cursor-pointer');
+        favoriteCityButton.classList.add('favoriteListItemButton');
 
         favoriteCityButton.textContent = [
           favorite.city,
@@ -143,7 +154,7 @@
   });
 
   favoriteButton?.addEventListener('click', () => {
-    const place = selectedPlace.get();
+    const place = $selectedPlace.get();
 
     if (!place) return;
 
@@ -161,7 +172,7 @@
     const favorite = $favoriteCities.get().find((city) => city.id === id);
 
     if (favorite) {
-      selectedPlace.set(favorite);
+      $selectedPlace.set(favorite);
       moveGlobe(favorite);
     }
 
@@ -185,7 +196,7 @@
     updateFavoriteButton();
   });
 
-  selectedPlace.subscribe(() => {
+  $selectedPlace.subscribe(() => {
     updateFavoriteButton();
   });
 </script>

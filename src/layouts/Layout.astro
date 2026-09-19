@@ -15,32 +15,23 @@ const title = 'SMK World Weather';
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-
-    <script
-      is:inline
-      src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
-    ></script>
-    <script
-      is:inline
-      src="https://code.jquery.com/jquery-4.0.0.js"
-      integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U="
-      crossorigin="anonymous"
-    ></script>
   </head>
   <body>
     <LoadingScreen />
     <div id="globe"></div>
 
     <div class="content">
-      <header class="p-3">
-        <div class="flex sm:flex-row flex-col justify-between gap-8 mb-6 align-center">
-          <h1 class="font-title font-bold text-3xl text-center">
-            <a class="cursor-pointer" href="/">
-              {title}
-            </a>
+      <div id="errorBanner" class="hidden errorBanner" role="alert">
+        <span id="errorBannerMessage"></span>
+      </div>
+
+      <header>
+        <div class="headerRow">
+          <h1 class="font-title siteTitle">
+            <a href="/">{title}</a>
           </h1>
 
-          <div class="w-full sm:w-auto">
+          <div class="favoritesWrapper">
             <FavoriteCities />
           </div>
         </div>
@@ -60,18 +51,78 @@ const title = 'SMK World Weather';
 
       <slot />
     </div>
+
+    <style lang="scss">
+      .errorBanner {
+        width: min(900px, calc(100% - 2rem));
+        margin: 0 auto 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        background: rgba(248, 113, 113, 0.15);
+        border: 1px solid rgba(248, 113, 113, 0.4);
+        color: #fecaca;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .errorBanner.hidden {
+        display: none;
+      }
+
+      .headerRow {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .siteTitle {
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .favoritesWrapper {
+        width: 100%;
+      }
+
+      @media (min-width: 640px) {
+        .headerRow {
+          flex-direction: row;
+        }
+
+        .favoritesWrapper {
+          width: auto;
+        }
+      }
+    </style>
+
     <script>
-      /// <reference types="jquery" />
-      import { selectedPlace } from '../stores/weatherStore';
+      import { $selectedPlace, type City } from '../stores/placeStore';
+      import { $appError } from '../stores/errorStore';
       import { moveGlobe } from '../scripts/globe';
+      import { debounce } from '../lib/common';
 
+      // ==========================================================================
+      // DOM
+      // ==========================================================================
+
+      const searchInput = document.querySelector<HTMLInputElement>('#search');
+      const dropdown = document.querySelector<HTMLUListElement>('#dropdown');
+      const errorBanner = document.querySelector<HTMLElement>('#errorBanner');
+      const errorBannerMessage = document.querySelector<HTMLElement>(
+        '#errorBannerMessage',
+      );
+
+      // ==========================================================================
       // API
-      const PLACES_URL = 'https://api.placekit.co/search';
-      const PLACEKIT_API_KEY =
-        'pk_NpHw+lysJvBzigbRf/VpUDyRj7pjydvA0MBR93LmoPI=';
+      // ==========================================================================
 
-      // Search Place============================================
-      let searchResults: any[] = [];
+      const PLACES_URL = 'https://api.placekit.co/search';
+      const PLACEKIT_API_KEY = import.meta.env.PUBLIC_PLACEKIT_API_KEY;
+
+      let searchResults: City[] = [];
 
       async function searchPlaces(query: string) {
         const response = await fetch(PLACES_URL, {
@@ -93,62 +144,111 @@ const title = 'SMK World Weather';
         }
 
         const data = await response.json();
-        searchResults = data.results; //"Take the PlaceKit results and save them in my results variable."
+        searchResults = data.results;
         return searchResults;
       }
 
-      $('#search').on('input', async function () {
-        const query = ($(this).val() as string).trim(); //Get what the user typed and remove unnecessary spaces.
+      // ==========================================================================
+      // Functions
+      // ==========================================================================
 
-        if (query.length < 2) {
-          $('#dropdown').addClass('hidden');
-          return;
-        }
-        const places = await searchPlaces(query);
-        renderDropdown(places);
-      });
+      function renderDropdown(items: City[]): void {
+        if (!dropdown) return;
 
-      // SHOW Place ===============================================
+        dropdown.innerHTML = '';
 
-      function renderDropdown(items: any[]) {
-        const $dropdown = $('#dropdown');
-        $dropdown.empty(); //This removes everything currently inside the <ul>.
-
-        if (items.length == 0) {
-          $dropdown.append('<li>No Result</li>');
+        if (items.length === 0) {
+          const emptyItem = document.createElement('li');
+          emptyItem.textContent = 'No Result';
+          dropdown.append(emptyItem);
         }
 
-        items.forEach(function (item, index) {
-          // show only have info city, administrative or country
+        items.forEach((item, index) => {
           if (item.city && item.administrative && item.country) {
-            const li = `<li data-index="${index}">${item.city}, ${item.administrative}, ${item.country}</li>`;
-            $dropdown.append(li);
+            const li = document.createElement('li');
+            li.dataset.index = String(index);
+            li.textContent = `${item.city}, ${item.administrative}, ${item.country}`;
+            dropdown.append(li);
           }
         });
-        $dropdown.removeClass('hidden');
+
+        dropdown.classList.remove('hidden');
       }
 
-      // ux  hide dropdown if click other place when dropdown is open
-      $(document).on('click', function (event) {
+      async function fetchCities(query: string) {
+        if (query.length < 2) {
+          dropdown?.classList.add('hidden');
+          return;
+        }
+
+        try {
+          const places = await searchPlaces(query);
+
+          renderDropdown(places);
+          $appError.set(null);
+        } catch (error) {
+          console.error('Failed to search places:', error);
+          $appError.set(
+            'Could not search cities. Please check your connection.',
+          );
+        }
+      }
+
+      const debouncedFetchCities = debounce(fetchCities, 500);
+
+      // ==========================================================================
+      // Event listeners
+      // ==========================================================================
+      searchInput?.addEventListener('input', () => {
+        const query = searchInput.value.trim();
+
+        debouncedFetchCities(query);
+      });
+
+      // Hide dropdown when clicking outside the search area
+      document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) return;
+
         if (
-          !$(event.target).closest('#search').length &&
-          !$(event.target).closest('#dropdown').length
+          !event.target.closest('#search') &&
+          !event.target.closest('#dropdown')
         ) {
-          $('#dropdown').addClass('hidden');
+          dropdown?.classList.add('hidden');
         }
       });
 
-      // Select Place============================================
-      $('#dropdown').on('click', 'li[data-index]', function () {
-        const index = $(this).data('index');
+      dropdown?.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const item = target.closest<HTMLLIElement>('li[data-index]');
+        if (!item) return;
+
+        const index = Number(item.dataset.index);
         const place = searchResults[index];
-        selectedPlace.set(place);
+        $selectedPlace.set(place);
 
-        $('#search').val(``);
+        if (searchInput) {
+          searchInput.value = '';
+        }
 
-        // place on search bar.
-        $('#dropdown').addClass('hidden'); // close dropdown when selected
+        dropdown.classList.add('hidden');
         moveGlobe(place);
+      });
+
+      // ==========================================================================
+      // Store subscriptions
+      // ==========================================================================
+
+      $appError.subscribe((message) => {
+        if (!errorBanner || !errorBannerMessage) return;
+
+        if (message) {
+          errorBannerMessage.textContent = message;
+          errorBanner.classList.remove('hidden');
+        } else {
+          errorBanner.classList.add('hidden');
+        }
       });
     </script>
   </body>

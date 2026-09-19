@@ -56,7 +56,10 @@
 </style>
 
 <script>
-  type TemperatureUnit = 'celsius' | 'fahrenheit';
+  import {
+    $temperatureUnit,
+    type TemperatureUnit,
+  } from '../stores/weatherStore';
 
   const celsiusButton =
     document.querySelector<HTMLButtonElement>('#celsiusButton');
@@ -74,13 +77,7 @@
 
     fahrenheitButton?.setAttribute('aria-pressed', String(!isCelsius));
 
-    window.dispatchEvent(
-      new CustomEvent('temperatureUnitChanged', {
-        detail: {
-          unit,
-        },
-      }),
-    );
+    $temperatureUnit.set(unit);
   }
 
   celsiusButton?.addEventListener('click', () => {
