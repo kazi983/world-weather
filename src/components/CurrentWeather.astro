@@ -318,9 +318,19 @@
     }
 
     if (date) {
+      // `weather.daily.time[0]` is "today" in the selected location's own
+      // timezone (the API is queried with `timezone=auto`), which can differ
+      // from the browser's local date. Falls back to the browser date only
+      // if the API response is missing it.
+      const todayDateString = weather.daily.time[0];
+
+      const todayDate = todayDateString
+        ? new Date(`${todayDateString}T12:00:00`)
+        : new Date();
+
       setTextWithTransition(
         date,
-        new Date().toLocaleDateString('en-CA', {
+        todayDate.toLocaleDateString('en-CA', {
           weekday: 'long',
           month: 'long',
           day: 'numeric',
