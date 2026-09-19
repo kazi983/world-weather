@@ -51,16 +51,9 @@ export function moveGlobe(place: City): void {
         city: place.city,
       },
     ])
-    .pointColor(() => '#ff0000')
-    .pointAltitude(0.1)
-    .pointRadius(0.1)
-    .labelsData([
-      {
-        lat: place.lat,
-        lng: place.lng,
-        city: place.city,
-      },
-    ])
+    .pointColor(() => '#ffffff')
+    .pointRadius(0.2)
+    .pointResolution(200)
     .labelText('city')
     .labelSize(0.5)
     .labelDotRadius(0.5)
