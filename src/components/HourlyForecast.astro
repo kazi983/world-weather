@@ -10,7 +10,7 @@
     </p>
   </div>
 
-  <div id="hourlyForecastList" class="hourlyForecastList text-transition">
+  <div id="hourlyForecastList" class="text-transition hourlyForecastList">
     <p class="hourlyLoading">Loading hourly forecast...</p>
   </div>
 </section>
@@ -108,6 +108,8 @@
 
     :global(.hourCard) {
       min-width: 120px;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
     }
   }
 
