@@ -55,10 +55,9 @@
   }
 
   :global(.hourCard) {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     min-width: 130px;
-    flex: 1;
     align-items: center;
     gap: 0.65rem;
     padding: 1.25rem 0.75rem;
@@ -100,26 +99,23 @@
     opacity: 0.65;
   }
 
-  @media (max-width: 600px) {
+  @media (min-width: 600px) {
     .hourlyForecastHeading {
       align-items: flex-start;
       flex-direction: column;
     }
 
     :global(.hourCard) {
+      display: flex;
+      flex-direction: column;
       min-width: 120px;
       overflow-x: auto;
       padding-bottom: 0.5rem;
     }
-  }
 
-  @media (min-width: 600px) {
     .hourlyForecastList {
+      display: flex;
       flex-direction: row;
-    }
-
-    :global(.hourCard) {
-      flex-direction: column;
     }
   }
 </style>
